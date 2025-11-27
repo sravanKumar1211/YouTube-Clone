@@ -1,15 +1,13 @@
 import React, { useState } from "react";
 import logo from "../assets/youtube.png";
-import { IoMenu } from "react-icons/io5";
-import { IoSearchSharp } from "react-icons/io5";
-import { FaMicrophone } from "react-icons/fa";
-import { FaBell } from "react-icons/fa";
-import { FaPlus } from "react-icons/fa6";
+import { IoMenu, IoSearchSharp } from "react-icons/io5";
+import { FaMicrophone, FaBell, FaPlus } from "react-icons/fa";
 import { CgProfile } from "react-icons/cg";
 
 function NavBar() {
-    // this state is defined for nav bar pic before and after login
-    const[userPic,setUserPic]=useState()
+  const [userPic, setUserPic] = useState(null);     // will come from backend later
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // backend will update later
+  const [openMenu, setOpenMenu] = useState(false);  // for dropdown toggle
 
   return (
     <>
@@ -21,7 +19,7 @@ function NavBar() {
             <IoMenu />
           </button>
           <div className="flex items-center gap-1 cursor-pointer">
-            <img src={logo} alt="YouTube" className="h-6" />
+            <img src={logo} alt="Logo" className="h-6" />
             <span className="text-lg">ProTube</span>
           </div>
         </div>
@@ -53,14 +51,54 @@ function NavBar() {
             <FaBell />
             <span className="absolute top-0 right-0 bg-red-600 text-white text-xs px-1 rounded-full">9+</span>
           </button>
-            {/* user pic comes dynamilclly after login */}
-         <button className="cursor-pointer">
-            {userPic ? (
+
+          {/* ===== Profile + Dropdown ===== */}
+          <div className="relative">
+            <button className="cursor-pointer" onClick={() => setOpenMenu(!openMenu)}>
+              {userPic ? (
                 <img src={userPic} alt="Profile" className="h-8 w-8 rounded-full object-cover" />
-            ) : (
+              ) : (
                 <CgProfile className="text-2xl" />
+              )}
+            </button>
+
+            {/* Dropdown */}
+            {openMenu && (
+              <div className="absolute right-0 mt-2 w-36 bg-white shadow-lg border rounded-md py-2 text-sm">
+
+                {!isLoggedIn && (
+                  <>
+                    <button
+                      className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                      onClick={() => setIsLoggedIn(true)} // later call backend
+                    >
+                      Login
+                    </button>
+
+                    <button
+                      className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                      onClick={() => alert("Signup Page")} // signup UI later
+                    >
+                      Sign Up
+                    </button>
+                  </>
+                )}
+
+                {isLoggedIn && (
+                  <button
+                    className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                    onClick={() => {
+                      setIsLoggedIn(false);
+                      setUserPic(null);
+                    }}
+                  >
+                    Logout
+                  </button>
+                )}
+
+              </div>
             )}
-        </button>
+          </div>
         </div>
       </div>
     </>
@@ -68,6 +106,3 @@ function NavBar() {
 }
 
 export default NavBar;
-
-
-
