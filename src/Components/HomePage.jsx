@@ -12,10 +12,10 @@ function HomePage({ sideBar }) {
   const videos = Array.from({ length: 30 });
 
   return (
-    <div className="w-full min-h-screen bg-white">
+    <div className=" w-full min-h-screen bg-white mt-[-40px]">
 
       {/* ------------------ CATEGORY BAR (STICKY) ------------------ */}
-      <div className="sticky top-0 bg-white z-20 py-3 shadow">
+      <div className=" sticky top-12  bg-white z-20 py-3">
         <div
           className=" flex overflow-x-auto gap-3 px-3 scrollbar-hide"
           style={{
