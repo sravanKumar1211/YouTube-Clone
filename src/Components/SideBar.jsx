@@ -20,10 +20,11 @@ import studio from "../assets/youtube-studio-icon.png";
 import music from "../assets/youtube-music-icon.png";
 import kids from "../assets/youtube-kids.png";
 
-function SideBar() {
+function SideBar({sideBar}) {
   return (
     <>
-      <div className="w-60 fixed top-[56px] left-0 h-[calc(100vh-56px)] bg-white overflow-y-auto px-2 py-3 text-sm font-roboto select-none">
+        {/* used turnary operator and changed tailwind classes to hidden when sideBar val is false */}
+      <div className={sideBar?"w-60 fixed top-[56px] left-0 h-[calc(100vh-56px)] bg-white overflow-y-auto px-2 py-3 text-sm font-roboto select-none":"hidden"}>
 
         {/* SECTION 1 */}
         <ul className="space-y-1">

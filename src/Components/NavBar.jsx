@@ -4,10 +4,14 @@ import { IoMenu, IoSearchSharp } from "react-icons/io5";
 import { FaMicrophone, FaBell, FaPlus } from "react-icons/fa";
 import { CgProfile } from "react-icons/cg";
 
-function NavBar() {
+function NavBar({sideBarFn,sideBar}) {
   const [userPic, setUserPic] = useState(null);     // will come from backend later
   const [isLoggedIn, setIsLoggedIn] = useState(false); // backend will update later
   const [openMenu, setOpenMenu] = useState(false);  // for dropdown toggle
+
+  const handleHamburger=()=>{
+    sideBarFn(!sideBar)// function to handle click on hamburger it passes clicked val to that function nugates the orginal val
+  }
 
   return (
     <>
@@ -15,7 +19,7 @@ function NavBar() {
 
         {/* ===== Left Section ===== */}
         <div className="flex items-center gap-4">
-          <button className="text-2xl p-1 hover:bg-gray-200 rounded-full cursor-pointer">
+          <button className="text-2xl p-1 hover:bg-gray-200 rounded-full cursor-pointer" onClick={handleHamburger}>
             <IoMenu />
           </button>
           <div className="flex items-center gap-1 cursor-pointer">
