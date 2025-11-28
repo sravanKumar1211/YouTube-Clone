@@ -1,5 +1,7 @@
 
 import React from "react";
+import { Link } from "react-router-dom";
+
 
 function HomePage({ sideBar }) {
 
@@ -50,6 +52,7 @@ function HomePage({ sideBar }) {
           }}
         >
           {videos.map((_, i) => (
+            <Link to={'/watch/12'}>
             <div key={i} className="cursor-pointer">
 
               {/* Thumbnail */}
@@ -83,6 +86,7 @@ function HomePage({ sideBar }) {
               </div>
 
             </div>
+            </Link>
           ))}
         </div>
       </div>

@@ -3,6 +3,7 @@ import logo from "../assets/youtube.png";
 import { IoMenu, IoSearchSharp } from "react-icons/io5";
 import { FaMicrophone, FaBell, FaPlus } from "react-icons/fa";
 import { CgProfile } from "react-icons/cg";
+import { Link } from "react-router-dom";
 
 function NavBar({sideBarFn,sideBar}) {
   const [userPic, setUserPic] = useState(null);     // will come from backend later
@@ -22,10 +23,12 @@ function NavBar({sideBarFn,sideBar}) {
           <button className="text-2xl p-1 hover:bg-gray-200 rounded-full cursor-pointer" onClick={handleHamburger}>
             <IoMenu />
           </button>
+          <Link to={'/'}>
           <div className="flex items-center gap-1 cursor-pointer">
             <img src={logo} alt="Logo" className="h-6" />
             <span className="text-lg">ProTube</span>
           </div>
+          </Link>
         </div>
 
         {/* ===== Center Section (Search) ===== */}
