@@ -24,7 +24,7 @@ function SideBar({sideBar}) {
   return (
     <>
         {/* used turnary operator and changed tailwind classes to hidden when sideBar val is false */}
-      <div className={sideBar?"w-60 fixed top-[56px] left-0 h-[calc(100vh-56px)] bg-white overflow-y-auto px-2 py-3 text-sm font-roboto select-none":"hidden"}>
+      <div className={sideBar?"w-60 fixed top-[56px] left-0 h-[calc(100vh-56px)] z-50 bg-white overflow-y-auto px-2 py-3 text-sm font-roboto select-none":"hidden"}>
 
         {/* SECTION 1 */}
         <ul className="space-y-1">
