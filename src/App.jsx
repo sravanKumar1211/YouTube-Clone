@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import NavBar from './Components/NavBar'
 import Home from './Pages/Home'
+import {Route,Routes} from 'react-router-dom'
+import Video from './Pages/Video';
 
 function App() {
   const[sideBar,setSideBar]=useState(true);// state that holds the boolion valof sideBar when HamburgerMenu clicked
@@ -10,7 +12,11 @@ function App() {
      {/* passed sidebar function and state to capture state and value */}
     <NavBar sideBarFn={sideBarFn} sideBar={sideBar}></NavBar>
     {/* sidebar passed to home component because side bar is a part of home */}
-    <Home sideBar={sideBar}></Home>
+    <Routes>
+      <Route path ='/' element={<Home sideBar={sideBar}></Home>}></Route>
+      <Route path ='/watch/:id' element={<Video></Video>}></Route>
+
+    </Routes>
     </>
   )
 }

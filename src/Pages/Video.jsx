@@ -1,0 +1,265 @@
+// import React from 'react'
+// import { AiOutlineLike } from "react-icons/ai";
+// import { BiDislike } from "react-icons/bi";
+
+// function Video() {
+//     let SuggestedVideos=[1,2,3,4,5,6,7,8,9]
+//   return (
+//     <>
+//         <div className='mt-5 flex pt-5 pb-5 justify-center'>
+//             <div className='w-100% max-w-[875px] flex flex-col'>
+//                 {/* video container */}
+//                 <div className='w-100% '>
+//                     <video controls autoPlay className='rounded-lg'>
+//                         <source src={'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4'} type='video/mp4' />
+//                     </video>
+//                 </div>
+//                 {/* about */}
+//                 <div>
+//                     {/* Video title */}
+//                     <div>demo Video</div>
+//                     {/* video profile */}
+//                     <div>
+//                         {/* video profile left */}
+//                         <div>
+//                             <div>
+//                                 <img src="https://cdn.fliki.ai/image/page/660ba680adaa44a37532fd97/6663112070e1cfda27f86585.jpg" alt="chanal logo" />
+//                                 <h3>chanal name</h3>
+//                                 <span>Date of posting</span>
+//                                 <span>100K views</span>
+//                             </div>
+//                             <button>Subscribe</button>
+                            
+//                         </div>
+//                          {/* video profile Right */}
+//                          <div>
+//                             <button><AiOutlineLike />Like 100</button>
+//                             <button><BiDislike />disLike</button>
+//                          </div>
+//                     </div>
+//                     {/* video description */}
+//                     <div>
+//                         <span>Lorem ipsum dolor sit amet consectetur adipisicing elit. 
+//                             Blanditiis, quam facilis fugit nostrum hic accusamus! Maxime 
+//                             officia debitis nulla voluptatibus quibusdam odit, dolorum at
+//                              molestiae saepe autem beatae ipsum et?</span>
+//                     </div>
+//                     {/* comment field */}
+//                     <div>
+//                         <div>
+//                             <input type="text" />
+//                         </div>
+//                         <div>
+//                             <button>Comment</button>
+//                             <button>Cancle</button>
+//                         </div>
+//                     </div>
+//                     {/* old comments */}
+//                     <div>
+//                         <img src=" https://cdn.fliki.ai/image/page/660ba680adaa44a37532fd97/6663112070e1cfda27f86585.jpg" alt="commented user profile pic" />
+//                         <span>Nice video</span>
+//                         <div>
+//                             <AiOutlineLike />
+//                             <BiDislike />
+//                         </div>
+//                     </div>
+
+//                 </div>
+//             </div>
+//             {/* video sugession */}
+//                 <div className='w-100% max-w-[406px] py-10 px-15 gap-8 flex flex-col'>
+//                     {
+//                         SuggestedVideos.map((item,ind)=>{
+//                              <div className="flex gap-3 mt-3">
+//                 <img
+//                   src="https://cdn.fliki.ai/image/page/660ba680adaa44a37532fd97/6663112070e1cfda27f86585.jpg"
+//                   alt="Channel Icon"
+//                   className="w-10 h-10 rounded-full"
+//                 />
+
+//                 <div className="flex flex-col">
+//                   <h3 className="text-sm font-semibold leading-tight">
+//                     Welcome to the Channel
+//                   </h3>
+//                   <p className="text-xs text-gray-600">Channel Name</p>
+//                   <p className="text-xs text-gray-600">100 views • 10 days ago</p>
+//                 </div>
+//               </div>
+//                         })
+//                     }
+//                 </div>
+
+//         </div>
+//     </>
+//   )
+// }
+
+// export default Video
+
+import React from "react";
+import { AiOutlineLike } from "react-icons/ai";
+import { BiDislike } from "react-icons/bi";
+
+function Video() {
+  const SuggestedVideos = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+
+  return (
+    <>
+      <div className="flex justify-center gap-6 pt-6 pb-10 px-4">
+
+        {/* ---------------- LEFT MAIN VIDEO SECTION ---------------- */}
+        <div className="max-w-[900px] w-full flex flex-col">
+
+          {/* VIDEO PLAYER */}
+          <div className="w-full">
+            <video controls autoPlay className="w-full h-auto rounded-xl shadow-md">
+              <source
+                src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+                type="video/mp4"
+              />
+            </video>
+          </div>
+
+          {/* TITLE */}
+          <h2 className="text-xl font-semibold mt-4">
+            Demo Video Title Sample
+          </h2>
+
+          {/* ---------------- CHANNEL INFO + LIKE BUTTONS ---------------- */}
+          <div className="flex justify-between items-start mt-4">
+
+            {/* LEFT SIDE — CHANNEL INFO */}
+            <div className="flex gap-3 items-start">
+
+              <img
+                src="https://cdn.fliki.ai/image/page/660ba680adaa44a37532fd97/6663112070e1cfda27f86585.jpg"
+                alt="channel logo"
+                className="w-12 h-12 rounded-full object-cover"
+              />
+
+              <div className="flex flex-col">
+                <h3 className="font-semibold text-gray-900 text-md">
+                  Channel Name
+                </h3>
+                <p className="text-gray-500 text-sm">
+                  100K subscribers
+                </p>
+              </div>
+
+              <button className="ml-4 px-4 py-2 bg-black text-white text-sm rounded-full hover:bg-gray-800">
+                Subscribe
+              </button>
+            </div>
+
+            {/* RIGHT SIDE — LIKE / DISLIKE */}
+            <div className="flex items-center gap-3">
+              <button className="flex items-center gap-1 bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-full">
+                <AiOutlineLike className="text-lg" /> 100
+              </button>
+
+              <button className="flex items-center gap-1 bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-full">
+                <BiDislike className="text-lg" />
+              </button>
+            </div>
+          </div>
+
+          {/* ---------------- DESCRIPTION BOX ---------------- */}
+          <div className="bg-gray-100 rounded-xl p-4 mt-5 text-sm">
+            <p className="font-medium">100,000 views · Jan 1, 2025</p>
+
+            <p className="mt-3 text-gray-800 leading-relaxed">
+              Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque
+              illum ducimus repellat reiciendis id debitis sit sint perspiciatis
+              accusantium qui veritatis illo, ipsa eaque assumenda fuga earum
+              soluta dolores!
+            </p>
+          </div>
+
+          {/* ---------------- COMMENT INPUT ---------------- */}
+          <div className="mt-6">
+            <h3 className="font-semibold text-lg mb-3">Comments</h3>
+
+            <div className="flex gap-3">
+              <img
+                src="https://cdn.fliki.ai/image/page/660ba680adaa44a37532fd97/6663112070e1cfda27f86585.jpg"
+                className="w-10 h-10 rounded-full"
+                alt="user"
+              />
+
+              <div className="flex-1">
+                <input
+                  type="text"
+                  placeholder="Add a comment..."
+                  className="w-full border-b border-gray-300 focus:border-black outline-none py-1"
+                />
+
+                <div className="flex justify-end gap-2 mt-2">
+                  <button className="px-3 py-1 rounded-full hover:bg-gray-200">
+                    Cancel
+                  </button>
+                  <button className="px-4 py-1 rounded-full bg-black text-white hover:bg-gray-800">
+                    Comment
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* ---------------- OLD COMMENTS ---------------- */}
+          <div className="mt-6 space-y-5">
+
+            <div className="flex gap-3">
+              <img
+                src="https://cdn.fliki.ai/image/page/660ba680adaa44a37532fd97/6663112070e1cfda27f86585.jpg"
+                className="w-10 h-10 rounded-full"
+                alt="user"
+              />
+
+              <div>
+                <p className="text-sm">
+                  <span className="font-semibold mr-2">User123</span>
+                  Nice Video!
+                </p>
+
+                <div className="flex gap-2 text-gray-600 mt-1">
+                  <AiOutlineLike /> <BiDislike />
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        {/* ---------------- RIGHT SIDE — SUGGESTED VIDEOS ---------------- */}
+        <div className="max-w-[400px] w-full h-[88vh] overflow-y-auto pr-2">
+
+          {SuggestedVideos.map((item, ind) => (
+            <div key={ind} className="flex gap-3 mb-4 cursor-pointer">
+
+              {/* Thumbnail */}
+              <div className="w-44 h-28 rounded-lg overflow-hidden">
+                <img
+                src="https://cdn.fliki.ai/image/page/660ba680adaa44a37532fd97/6663112070e1cfda27f86585.jpg"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+
+              {/* Info */}
+              <div className="flex flex-col text-sm">
+                <h3 className="font-semibold leading-tight">
+                  Suggested Video {item}
+                </h3>
+                <p className="text-xs text-gray-600">Channel Name</p>
+                <p className="text-xs text-gray-600">100 views · 10 days ago</p>
+              </div>
+            </div>
+          ))}
+
+        </div>
+
+      </div>
+    </>
+  );
+}
+
+export default Video;
