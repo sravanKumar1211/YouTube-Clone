@@ -6,6 +6,9 @@ import { CiStreamOn } from "react-icons/ci";
 import { FaMicrophone, FaBell, FaPlus } from "react-icons/fa";
 import { CgProfile } from "react-icons/cg";
 import { Link, useNavigate } from "react-router-dom";
+
+
+
 function NavBar({ sideBarFn, sideBar }) {
   const [userPic, setUserPic] = useState(null);     // will come from backend later
   const [isLoggedIn, setIsLoggedIn] = useState(false); // backend will update later
