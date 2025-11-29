@@ -1,12 +1,15 @@
-
 import React, { useState } from "react";
+import axios from "axios";
 
 export default function VideoUpload() {
+  const CLOUD_NAME = "dzdurdxzw";
+  const UPLOAD_PRESET = "youtube-clone";
+
   const [videoData, setVideoData] = useState({
     title: "",
     description: "",
-    videoFile: null,
-    thumbnail: null,
+    videoFile: "",       // Will store Cloudinary VIDEO URL
+    thumbnail: "",       // Will store Cloudinary IMAGE URL
     tags: "",
     audience: "",
     monetization: "",
@@ -18,249 +21,306 @@ export default function VideoUpload() {
     more: ""
   });
 
-  // Handle Text, Radio, Select Inputs
+  // General input change
   const handleChange = (e) => {
     const { name, value } = e.target;
     setVideoData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Handle File Inputs (Video & Thumbnail)
-  const handleFileUpload = (e, field) => {
+  // Cloudinary upload helper
+  const uploadToCloudinary = async (file, type) => {
+    const data = new FormData();
+    data.append("file", file);
+    data.append("upload_preset", UPLOAD_PRESET);
+
+    const url =
+      type === "video"
+        ? `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/video/upload`
+        : `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`;
+
+    const res = await axios.post(url, data);
+    return res.data.secure_url; // Cloudinary URL
+  };
+
+  // Handle Video or Thumbnail upload
+  const handleFileUpload = async (e, fieldType) => {
     const file = e.target.files[0];
-    setVideoData((prev) => ({ ...prev, [field]: file }));
+    if (!file) return;
+
+    try {
+      const uploadedURL = await uploadToCloudinary(
+        file,
+        fieldType === "videoFile" ? "video" : "image"
+      );
+
+      setVideoData((prev) => ({
+        ...prev,
+        [fieldType]: uploadedURL,
+      }));
+
+      console.log(`Uploaded ${fieldType}:`, uploadedURL);
+    } catch (err) {
+      console.error("Upload failed:", err);
+    }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    //console.log("Final Upload Data:", videoData);
-    alert("Check console for uploaded data!");
+    console.log("FINAL DATA TO SEND TO BACKEND:", videoData);
+    alert("Video published (check console)!");
   };
-
     console.log(videoData)
-
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <form onSubmit={handleSubmit} className="max-w-6xl mx-auto bg-white rounded-lg shadow-sm p-6">
-        
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-semibold">Upload videos</h2>
-          <div className="flex gap-3">
-            <button type="button" className="px-4 py-2 rounded-md border border-gray-300 text-sm hover:bg-gray-50">
-              Cancel
-            </button>
-            <button type="submit" className="px-5 py-2 rounded-md bg-blue-600 text-white text-sm font-medium hover:bg-blue-700">
-              Publish
-            </button>
-          </div>
-        </div>
+    <div className="min-h-screen bg-[#f9f9f9] p-6">
+  <form
+    onSubmit={handleSubmit}
+    className="max-w-6xl mx-auto bg-white rounded-xl shadow border border-gray-200"
+  >
+    {/* HEADER */}
+    <div className="flex items-center justify-between px-6 py-4 border-b">
+      <h2 className="text-xl font-semibold text-gray-800">Upload videos</h2>
 
-        <div className="grid grid-cols-12 gap-6">
-          
-          {/* LEFT */}
-          <div className="col-span-12 lg:col-span-8 space-y-6">
-            
-            {/* Video Upload */}
-            <div className="border rounded-lg p-4 bg-gray-50">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Video file</label>
-              <div className="flex flex-col md:flex-row items-center gap-4">
-                
-                <div className="w-full md:w-[420px] h-[238px] bg-black rounded-md flex items-center justify-center text-gray-200">
-                  {videoData.videoFile ? (
-                    <video src={URL.createObjectURL(videoData.videoFile)} controls className="h-full w-full object-cover" />
-                  ) : (
-                    <span className="text-xs">Video preview / thumbnail</span>
-                  )}
-                </div>
-
-                <div className="flex-1">
-                  <p className="text-sm text-gray-600 mb-3">
-                    Select a video file to upload. Recommended: MP4.
-                  </p>
-
-                  <label className="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md cursor-pointer text-sm hover:bg-gray-50">
-                    <input type="file" className="sr-only" onChange={(e) => handleFileUpload(e, "videoFile")} />
-                    <span>Upload video</span>
-                  </label>
-                </div>
-
-              </div>
-            </div>
-
-            {/* Title */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Title</label>
-              <input
-                type="text"
-                name="title"
-                value={videoData.title}
-                onChange={handleChange}
-                placeholder="Add a title that describes your video"
-                className="w-full border border-gray-300 rounded-md px-4 py-2 text-sm focus:ring-2 focus:ring-blue-200"
-              />
-            </div>
-
-            {/* Description */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
-              <textarea
-                name="description"
-                value={videoData.description}
-                onChange={handleChange}
-                placeholder="Tell viewers about your video"
-                className="w-full min-h-[120px] border border-gray-300 rounded-md px-4 py-2 text-sm focus:ring-2 focus:ring-blue-200"
-              />
-            </div>
-
-            {/* Thumbnail + Tags */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              
-              {/* Thumbnail */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Thumbnail</label>
-                <div className="flex items-center gap-3">
-                  <div className="w-36 h-20 bg-gray-100 rounded-md border flex items-center justify-center text-xs">
-                    {videoData.thumbnail ? (
-                      <img src={URL.createObjectURL(videoData.thumbnail)} className="object-cover h-full w-full" />
-                    ) : (
-                      "Thumbnail Preview"
-                    )}
-                  </div>
-
-                  <label className="inline-flex items-center px-3 py-2 bg-white border border-gray-300 rounded-md cursor-pointer text-sm hover:bg-gray-50">
-                    <input type="file" className="sr-only" onChange={(e) => handleFileUpload(e, "thumbnail")} />
-                    <span>Upload thumbnail</span>
-                  </label>
-                </div>
-              </div>
-
-              {/* Tags */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Tags</label>
-                <input
-                  type="text"
-                  name="tags"
-                  value={videoData.tags}
-                  onChange={handleChange}
-                  placeholder="Add comma-separated tags"
-                  className="w-full border border-gray-300 rounded-md px-4 py-2 text-sm"
-                />
-              </div>
-
-            </div>
-
-            {/* Audience */}
-            <div className="bg-gray-50 border rounded-md p-4">
-              <p className="text-sm font-medium mb-2">Audience</p>
-              
-              <label className="flex items-center gap-2 text-sm">
-                <input type="radio" name="audience" value="kids" onChange={handleChange} className="accent-blue-600" />
-                Yes, it's made for kids
-              </label>
-
-              <label className="flex items-center gap-2 text-sm">
-                <input type="radio" name="audience" value="nokids" onChange={handleChange} className="accent-blue-600" />
-                No, it's not made for kids
-              </label>
-            </div>
-
-            {/* Monetization + License */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              
-              <div className="bg-gray-50 border rounded-md p-4">
-                <p className="text-sm font-medium mb-2">Monetization</p>
-                <select name="monetization" value={videoData.monetization} onChange={handleChange} className="w-full border rounded-md px-3 py-2 text-sm">
-                  <option value="">Select</option>
-                  <option value="enabled">Enabled</option>
-                  <option value="disabled">Disabled</option>
-                </select>
-              </div>
-
-              <div className="bg-gray-50 border rounded-md p-4">
-                <p className="text-sm font-medium mb-2">License</p>
-                <select name="license" value={videoData.license} onChange={handleChange} className="w-full border rounded-md px-3 py-2 text-sm">
-                  <option value="standard">Standard YouTube license</option>
-                  <option value="cc">Creative Commons</option>
-                </select>
-              </div>
-
-            </div>
-
-          </div>
-
-          {/* RIGHT SIDEBAR */}
-          <div className="col-span-12 lg:col-span-4 space-y-6">
-            
-            {/* Visibility */}
-            <div className="bg-white border rounded-md p-4">
-              <p className="text-sm font-medium mb-2">Visibility</p>
-
-              <label className="flex items-center gap-2">
-                <input type="radio" name="visibility" value="public" onChange={handleChange} />
-                Public
-              </label>
-
-              <label className="flex items-center gap-2">
-                <input type="radio" name="visibility" value="unlisted" onChange={handleChange} />
-                Unlisted
-              </label>
-
-              <label className="flex items-center gap-2">
-                <input type="radio" name="visibility" value="private" onChange={handleChange} />
-                Private
-              </label>
-            </div>
-
-            {/* Category */}
-            <div className="bg-white border rounded-md p-4">
-              <label className="block text-sm font-medium mb-2">Category</label>
-              <select
-                name="category"
-                value={videoData.category}
-                onChange={handleChange}
-                className="w-full border px-3 py-2 rounded-md text-sm"
-              >
-                <option value="">Select</option>
-                <option value="education">Education</option>
-                <option value="entertainment">Entertainment</option>
-                <option value="music">Music</option>
-                <option value="blogs">People & Blogs</option>
-              </select>
-            </div>
-
-            {/* Date */}
-            <div className="bg-white border rounded-md p-4">
-              <label className="block text-sm font-medium mb-2">Recording Date</label>
-              <input
-                type="date"
-                name="date"
-                value={videoData.date}
-                onChange={handleChange}
-                className="w-full border px-3 py-2 rounded-md text-sm"
-              />
-            </div>
-
-            {/* Checks */}
-            <div className="bg-white border rounded-md p-4 text-sm text-gray-700">
-              <p className="font-medium mb-1">Checks</p>
-              Copyright checks will run.
-            </div>
-
-            {/* More Options */}
-            <div className="bg-white border rounded-md p-4">
-              <p className="text-sm font-medium mb-2">More options</p>
-              <textarea
-                name="more"
-                value={videoData.more}
-                onChange={handleChange}
-                placeholder="Extra settings / notes"
-                className="w-full border px-3 py-2 rounded-md text-sm"
-              />
-            </div>
-
-          </div>
-        </div>
-      </form>
+      <div className="flex gap-3">
+        <button
+          type="button"
+          className="px-4 py-2 rounded-full border border-gray-300 text-sm hover:bg-gray-100"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          className="px-5 py-2 rounded-full bg-blue-600 text-white text-sm font-medium hover:bg-blue-700"
+        >
+          Publish
+        </button>
+      </div>
     </div>
+
+    <div className="grid grid-cols-12 gap-8 px-6 py-6">
+      {/* LEFT */}
+      <div className="col-span-12 lg:col-span-8 space-y-8">
+        {/* Video Upload */}
+        <div className="border rounded-xl p-5 bg-gray-50 shadow-sm">
+          <label className="block text-sm font-medium text-gray-700 mb-3">
+            Video file
+          </label>
+
+          <div className="flex flex-col md:flex-row gap-6">
+            <div className="w-full md:w-[420px] h-[240px] bg-black rounded-xl overflow-hidden flex items-center justify-center text-gray-300">
+              {videoData.videoFile ? (
+                <video
+                  src={videoData.videoFile}
+                  controls
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <span className="text-xs">Video preview</span>
+              )}
+            </div>
+
+            <div className="flex-1">
+              <p className="text-sm text-gray-600 mb-3">
+                Upload MP4 videos (max 128GB). YouTube processes your video after
+                upload.
+              </p>
+
+              <label className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-full cursor-pointer text-sm shadow-sm hover:bg-gray-100">
+                <input
+                  type="file"
+                  className="sr-only"
+                  accept="video/*"
+                  onChange={(e) => handleFileUpload(e, "videoFile")}
+                />
+                <span>Upload video</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        {/* Title */}
+        <div className="space-y-1">
+          <label className="block text-sm font-medium text-gray-700">
+            Title
+          </label>
+          <input
+            type="text"
+            name="title"
+            value={videoData.title}
+            onChange={handleChange}
+            className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-blue-300"
+          />
+        </div>
+
+        {/* Description */}
+        <div className="space-y-1">
+          <label className="block text-sm font-medium text-gray-700">
+            Description
+          </label>
+          <textarea
+            name="description"
+            value={videoData.description}
+            onChange={handleChange}
+            className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm min-h-[140px] focus:ring-2 focus:ring-blue-300"
+          />
+        </div>
+
+        {/* Thumbnail */}
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-gray-700">Thumbnail</label>
+
+          <div className="flex items-start gap-4">
+            <div className="w-40 h-24 bg-gray-100 border rounded-lg flex items-center justify-center overflow-hidden text-xs text-gray-500">
+              {videoData.thumbnail ? (
+                <img
+                  src={videoData.thumbnail}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                "Thumbnail Preview"
+              )}
+            </div>
+
+            <label className="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-full cursor-pointer text-sm shadow-sm hover:bg-gray-100">
+              <input
+                type="file"
+                className="sr-only"
+                accept="image/*"
+                onChange={(e) => handleFileUpload(e, "thumbnail")}
+              />
+              Upload thumbnail
+            </label>
+          </div>
+        </div>
+
+        {/* Tags */}
+        <div className="space-y-1">
+          <label className="text-sm font-medium text-gray-700">Tags</label>
+          <input
+            type="text"
+            name="tags"
+            value={videoData.tags}
+            onChange={handleChange}
+            className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm"
+          />
+        </div>
+
+        {/* Audience */}
+        <div className="bg-gray-50 border rounded-xl p-4 shadow-sm space-y-3">
+          <p className="text-sm font-medium">Audience</p>
+
+          <div className="flex gap-6">
+            <label className="flex items-center gap-2 text-sm cursor-pointer">
+              <input
+                type="radio"
+                name="audience"
+                value="kids"
+                onChange={handleChange}
+                className="accent-blue-600"
+              />
+              Made for kids
+            </label>
+
+            <label className="flex items-center gap-2 text-sm cursor-pointer">
+              <input
+                type="radio"
+                name="audience"
+                value="nokids"
+                onChange={handleChange}
+                className="accent-blue-600"
+              />
+              Not made for kids
+            </label>
+          </div>
+        </div>
+      </div>
+
+      {/* RIGHT PANEL */}
+      <div className="col-span-12 lg:col-span-4 space-y-6">
+        {/* Visibility */}
+        <div className="bg-white border rounded-xl p-5 shadow-sm">
+          <p className="text-sm font-medium mb-3">Visibility</p>
+
+          <div className="space-y-3">
+            <label className="flex items-center gap-3 cursor-pointer">
+              <input
+                type="radio"
+                name="visibility"
+                value="public"
+                onChange={handleChange}
+                className="accent-blue-600"
+              />
+              <span className="text-sm">Public</span>
+            </label>
+
+            <label className="flex items-center gap-3 cursor-pointer">
+              <input
+                type="radio"
+                name="visibility"
+                value="unlisted"
+                onChange={handleChange}
+                className="accent-blue-600"
+              />
+              <span className="text-sm">Unlisted</span>
+            </label>
+
+            <label className="flex items-center gap-3 cursor-pointer">
+              <input
+                type="radio"
+                name="visibility"
+                value="private"
+                onChange={handleChange}
+                className="accent-blue-600"
+              />
+              <span className="text-sm">Private</span>
+            </label>
+          </div>
+        </div>
+
+        {/* Category */}
+        <div className="bg-white border rounded-xl p-5 shadow-sm">
+          <label className="block text-sm font-medium mb-2">Category</label>
+          <select
+            name="category"
+            value={videoData.category}
+            onChange={handleChange}
+            className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-300"
+          >
+            <option value="">Select</option>
+            <option value="education">Education</option>
+            <option value="entertainment">Entertainment</option>
+            <option value="music">Music</option>
+            <option value="blog">People & Blogs</option>
+          </select>
+        </div>
+
+        {/* Date */}
+        <div className="bg-white border rounded-xl p-5 shadow-sm">
+          <label className="block text-sm font-medium mb-2">
+            Recording Date
+          </label>
+          <input
+            type="date"
+            name="date"
+            value={videoData.date}
+            onChange={handleChange}
+            className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-300"
+          />
+        </div>
+
+        {/* More Options */}
+        <div className="bg-white border rounded-xl p-5 shadow-sm">
+          <label className="block text-sm font-medium mb-2">More Options</label>
+          <textarea
+            name="more"
+            value={videoData.more}
+            onChange={handleChange}
+            className="w-full border rounded-lg px-3 py-2 text-sm min-h-[80px] focus:ring-2 focus:ring-blue-300"
+          />
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+
   );
 }
