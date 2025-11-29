@@ -1,6 +1,7 @@
 import React from "react";
 import { AiOutlineLike } from "react-icons/ai";
 import { BiDislike } from "react-icons/bi";
+import { Link } from "react-router-dom";
 
 function Video() {
   const SuggestedVideos = [1, 2, 3, 4, 5, 6, 7, 8, 9];
@@ -32,13 +33,13 @@ function Video() {
 
             {/* LEFT SIDE — CHANNEL INFO */}
             <div className="flex gap-3 items-start">
-
+                <Link to={'/user/12'}>
               <img
                 src="https://cdn.fliki.ai/image/page/660ba680adaa44a37532fd97/6663112070e1cfda27f86585.jpg"
                 alt="channel logo"
                 className="w-12 h-12 rounded-full object-cover"
               />
-
+                </Link>
               <div className="flex flex-col">
                 <h3 className="font-semibold text-gray-900 text-md">
                   Channel Name

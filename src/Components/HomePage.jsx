@@ -52,9 +52,10 @@ function HomePage({ sideBar }) {
           }}
         >
           {videos.map((_, i) => (
-            <Link to={'/watch/12'}>
+           
             <div key={i} className="cursor-pointer">
 
+                 <Link to={'/watch/12'}>
               {/* Thumbnail */}
               <div className="relative w-full h-64 bg-gray-200 rounded-xl overflow-hidden">
                 <img
@@ -67,8 +68,10 @@ function HomePage({ sideBar }) {
                   35:00
                 </span>
               </div>
+              </Link>
 
               {/* Video Info */}
+               <Link to={'/user/12'}>
               <div className="flex gap-3 mt-3">
                 <img
                   src="https://cdn.fliki.ai/image/page/660ba680adaa44a37532fd97/6663112070e1cfda27f86585.jpg"
@@ -84,9 +87,10 @@ function HomePage({ sideBar }) {
                   <p className="text-xs text-gray-600">100 views • 10 days ago</p>
                 </div>
               </div>
+              </Link>
 
             </div>
-            </Link>
+            
           ))}
         </div>
       </div>
