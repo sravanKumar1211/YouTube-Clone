@@ -1,57 +1,147 @@
 
-import React from "react";
-import googleLogo from "../assets/google.png"; // FIXED IMPORT
+import React, { useState } from "react";
+import googleLogo from "../assets/google.png";
 
+function Login({ setLoginPopUp }) {
+  const [loginField, setLoginField] = useState({
+    fullName: "",
+    email: "",
+    password: "",
+  });
 
+  const [errors, setErrors] = useState({
+    fullName: "",
+    email: "",
+    password: "",
+  });
 
-function Login({setLoginPopUp}) {
-    const handleLogin=()=>{setLoginPopUp(false)}
-    
+  // ONCHANGE HANDLER
+  const handleOnChangeInput = (e, field) => {
+    setLoginField({ ...loginField, [field]: e.target.value });
+  };
+console.log(loginField)
+  // VALIDATION FUNCTION
+  const validate = () => {
+    let valid = true;
+    let newErrors = { fullName: "", email: "", password: "" };
+
+    // Full name: at least 3 chars, letters only
+    if (!loginField.fullName.trim() || loginField.fullName.trim().length < 3) {
+      newErrors.fullName = "Full name must be at least 3 characters.";
+      valid = false;
+    } else if (!/^[a-zA-Z ]+$/.test(loginField.fullName)) {
+      newErrors.fullName = "Name must contain only letters.";
+      valid = false;
+    }
+
+    // Email validation
+    if (!loginField.email.trim()) {
+      newErrors.email = "Email is required.";
+      valid = false;
+    } else if (!/^\S+@\S+\.\S+$/.test(loginField.email)) {
+      newErrors.email = "Enter a valid email address.";
+      valid = false;
+    }
+
+    // Password validation
+    if (!loginField.password) {
+      newErrors.password = "Password is required.";
+      valid = false;
+    } else if (
+      !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{6,}$/.test(
+        loginField.password
+      )
+    ) {
+      newErrors.password =
+        "Password must include uppercase, lowercase, number, special char & min 6 chars.";
+      valid = false;
+    }
+
+    setErrors(newErrors);
+    return valid;
+  };
+
+  // LOGIN CLICK HANDLER
+  const handleLogin = () => {
+    if (validate()) {
+      alert("Login Successful!");
+      setLoginPopUp(false); // Close popup
+    }
+  };
+
   return (
     <>
-      {/* Transparent Dark Background Overlay */}
-      <div className="fixed inset-0 bg-white bg-opacity-40 mt-15 backdrop-blur-sm flex items-center justify-center z-0">
-
-        {/* Popup Login Card */}
+      <div className="fixed inset-0 bg-white bg-opacity-40 backdrop-blur-sm flex items-center justify-center z-50">
         <div className="bg-white w-full max-w-md rounded-xl shadow-xl p-8">
 
           {/* Google Logo */}
           <div className="flex justify-center">
-            <img
-              src={googleLogo}
-              alt="Google"
-              className="w-12 h-12"
-            />
+            <img src={googleLogo} alt="Google" className="w-12 h-12" />
           </div>
 
-          {/* Title */}
           <h2 className="text-2xl font-semibold text-center mt-4">
             Sign in
           </h2>
-
           <p className="text-center text-gray-600 mt-1 mb-6 text-sm">
             to continue to <span className="font-medium">ProTube</span>
           </p>
 
-          {/* Email Input */}
+          {/* Full Name */}
+          <div className="mt-4">
+            <input
+              type="text"
+              placeholder="Enter full name"
+              value={loginField.fullName}
+              onChange={(e) => handleOnChangeInput(e, "fullName")}
+              className={`w-full border px-4 py-3 rounded-md text-sm focus:ring-2 ${
+                errors.fullName
+                  ? "border-red-500 focus:ring-red-300"
+                  : "border-gray-300 focus:ring-blue-500"
+              }`}
+            />
+            {errors.fullName && (
+              <p className="text-red-500 text-xs mt-1">{errors.fullName}</p>
+            )}
+          </div>
+
+          {/* Email */}
           <div className="mt-4">
             <input
               type="email"
               placeholder="Email"
-              className="w-full border border-gray-300 rounded-md px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={loginField.email}
+              onChange={(e) => handleOnChangeInput(e, "email")}
+              className={`w-full border px-4 py-3 rounded-md text-sm focus:ring-2 ${
+                errors.email
+                  ? "border-red-500 focus:ring-red-300"
+                  : "border-gray-300 focus:ring-blue-500"
+              }`}
             />
+            {errors.email && (
+              <p className="text-red-500 text-xs mt-1">{errors.email}</p>
+            )}
           </div>
 
-          {/* Password Input */}
+          {/* Password */}
           <div className="mt-4">
             <input
               type="password"
               placeholder="Enter password"
-              className="w-full border border-gray-300 rounded-md px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={loginField.password}
+              onChange={(e) => handleOnChangeInput(e, "password")}
+              className={`w-full border px-4 py-3 rounded-md text-sm focus:ring-2 ${
+                errors.password
+                  ? "border-red-500 focus:ring-red-300"
+                  : "border-gray-300 focus:ring-blue-500"
+              }`}
             />
+            {errors.password && (
+              <p className="text-red-500 text-xs mt-1">{errors.password}</p>
+            )}
+            <p className="text-sm text-gray-600 mt-3 cursor-pointer hover:underline">Password Must contain:1 uppercase ,1 lowercase,1 number,1 special character,Minimum 6 characters</p>
           </div>
 
-          {/* Forgot email link */}
+          {/* Forgot email */}
           <p className="text-sm text-blue-600 mt-3 cursor-pointer hover:underline">
             Forgot email?
           </p>
@@ -65,12 +155,10 @@ function Login({setLoginPopUp}) {
 
           {/* Google Login Button */}
           <button className="w-full flex items-center justify-center gap-3 border border-gray-300 px-4 py-3 rounded-md hover:bg-gray-50">
-            <img
-              src={googleLogo}
-              className="w-6 h-6"
-              alt="Google Icon"
-            />
-            <span className="text-sm font-medium">Sign in with Google</span>
+            <img src={googleLogo} className="w-6 h-6" alt="Google Icon" />
+            <span className="text-sm font-medium">
+              Sign in with Google
+            </span>
           </button>
 
           {/* Footer Buttons */}
@@ -79,8 +167,10 @@ function Login({setLoginPopUp}) {
               Create account
             </button>
 
-            <button className="bg-blue-600 text-white px-6 py-2 rounded-md text-sm font-medium hover:bg-blue-700"
-             onClick={handleLogin}>
+            <button
+              className="bg-blue-600 text-white px-6 py-2 rounded-md text-sm font-medium hover:bg-blue-700"
+              onClick={handleLogin}
+            >
               Login
             </button>
           </div>
