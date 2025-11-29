@@ -32,7 +32,7 @@ export default function VideoUpload() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Final Upload Data:", videoData);
+    //console.log("Final Upload Data:", videoData);
     alert("Check console for uploaded data!");
   };
 

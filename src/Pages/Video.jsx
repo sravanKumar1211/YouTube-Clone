@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import { AiOutlineLike } from "react-icons/ai";
 import { BiDislike } from "react-icons/bi";
 import { Link } from "react-router-dom";
 
 function Video() {
   const SuggestedVideos = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+  const[comments,SetComments]=useState("")
+  console.log(comments)
 
   return (
     <>
@@ -93,6 +95,7 @@ function Video() {
                 <input
                   type="text"
                   placeholder="Add a comment..."
+                  value={comments} onChange={(e)=>{SetComments(e.target.value)}}
                   className="w-full border-b border-gray-300 focus:border-black outline-none py-1"
                 />
 
