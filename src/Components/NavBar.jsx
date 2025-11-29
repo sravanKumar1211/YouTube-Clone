@@ -6,6 +6,7 @@ import { CiStreamOn } from "react-icons/ci";
 import { FaMicrophone, FaBell, FaPlus } from "react-icons/fa";
 import { CgProfile } from "react-icons/cg";
 import { Link, useNavigate } from "react-router-dom";
+import Login from "./Login";
 
 
 
@@ -14,6 +15,7 @@ function NavBar({ sideBarFn, sideBar }) {
   const [isLoggedIn, setIsLoggedIn] = useState(false); // backend will update later
   const [openMenu, setOpenMenu] = useState(false);  // for dropdown toggle
   const [createMenu, setCreateMenu] = useState(false);
+   const [loginOpoup, setLoginPopUp] = useState(false)
   const navigate = useNavigate();
 
 
@@ -124,7 +126,7 @@ function NavBar({ sideBarFn, sideBar }) {
                   <>
                     <button
                       className="w-full text-left px-4 py-2 hover:bg-gray-100"
-                      onClick={() => setIsLoggedIn(true)} // later call backend
+                      onClick={() =>{setIsLoggedIn(true),setOpenMenu(false),setLoginPopUp(true)}} // later call backend
                     >
                       Login
                     </button>
@@ -144,6 +146,7 @@ function NavBar({ sideBarFn, sideBar }) {
                     onClick={() => {
                       setIsLoggedIn(false);
                       setUserPic(null);
+                      
                     }}
                   >
                     Logout
@@ -153,6 +156,10 @@ function NavBar({ sideBarFn, sideBar }) {
               </div>
             )}
           </div>
+          {
+            loginOpoup && <Login setLoginPopUp={setLoginPopUp}></Login>
+          }
+
         </div>
       </div>
     </>
