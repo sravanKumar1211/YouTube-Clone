@@ -80,7 +80,7 @@ console.log(signinField)
 
   return (
     <>
-      <div className="fixed inset-0 bg-white bg-opacity-40 backdrop-blur-sm flex items-center justify-center z-50">
+      <div className="fixed inset-0 bg-white bg-opacity-40 mt-15 backdrop-blur-sm flex items-center justify-center z-50">
 
         <div className="bg-white w-full max-w-md rounded-xl shadow-xl p-8">
 
