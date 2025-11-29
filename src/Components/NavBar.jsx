@@ -7,6 +7,7 @@ import { FaMicrophone, FaBell, FaPlus } from "react-icons/fa";
 import { CgProfile } from "react-icons/cg";
 import { Link, useNavigate } from "react-router-dom";
 import Login from "./Login";
+import SignIn from "./SignIn";
 
 
 
@@ -15,7 +16,8 @@ function NavBar({ sideBarFn, sideBar }) {
   const [isLoggedIn, setIsLoggedIn] = useState(false); // backend will update later
   const [openMenu, setOpenMenu] = useState(false);  // for dropdown toggle
   const [createMenu, setCreateMenu] = useState(false);
-   const [loginOpoup, setLoginPopUp] = useState(false)
+  const [loginOpoup, setLoginPopUp] = useState(false);
+  const [signinOpoup, setSigninPopUp] = useState(false);
   const navigate = useNavigate();
 
 
@@ -133,7 +135,7 @@ function NavBar({ sideBarFn, sideBar }) {
 
                     <button
                       className="w-full text-left px-4 py-2 hover:bg-gray-100"
-                      onClick={() => alert("Signup Page")} // signup UI later
+                      onClick={() => {setOpenMenu(false),setSigninPopUp(true)}} // signup UI later
                     >
                       Sign Up
                     </button>
@@ -158,6 +160,10 @@ function NavBar({ sideBarFn, sideBar }) {
           </div>
           {
             loginOpoup && <Login setLoginPopUp={setLoginPopUp}></Login>
+            
+          }
+          {
+            signinOpoup && <SignIn setSigninPopUp={setSigninPopUp}></SignIn>
           }
 
         </div>
