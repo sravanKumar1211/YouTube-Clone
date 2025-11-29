@@ -77,7 +77,7 @@ function NavBar({ sideBarFn, sideBar }) {
                   className="w-full flex text-left px-4 py-2 hover:bg-gray-100 justify-center gap-1"
                   onClick={() => {
                     setCreateMenu(false);
-                    navigate("/user/122");
+                    navigate("/122/uploard");
                   }}
                 >
                   Upload Video <FaVideo />

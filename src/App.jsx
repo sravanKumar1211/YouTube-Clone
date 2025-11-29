@@ -4,6 +4,7 @@ import Home from './Pages/Home'
 import {Route,Routes} from 'react-router-dom'
 import Video from './Pages/Video';
 import PofilePage from './Pages/PofilePage';
+import VideoUploard from './Pages/VideoUploard';
 
 function App() {
   const[sideBar,setSideBar]=useState(true);// state that holds the boolion valof sideBar when HamburgerMenu clicked
@@ -17,6 +18,7 @@ function App() {
       <Route path ='/' element={<Home sideBar={sideBar}></Home>}></Route>
       <Route path ='/watch/:id' element={<Video></Video>}></Route>
       <Route path ='/user/:id' element={<PofilePage sideBar={sideBar}></PofilePage>}></Route>
+      <Route path ='/:id/uploard' element={<VideoUploard></VideoUploard>}></Route>
 
     </Routes>
     </>
