@@ -19,6 +19,8 @@ function Video() {
     try {
       const response = await axios.get(`http://localhost:3000/api/getvideobyid/${id}`);
       setVideoData(response.data.video);
+      console.log(videoData)
+
     } catch (err) {
       console.log(err.message);
     }
@@ -39,14 +41,14 @@ function Video() {
           {/* VIDEO PLAYER */}
               {videoData?.videoUrl && (
           <video controls autoPlay className="w-full h-auto rounded-xl shadow-md">
-            <source src={videoData.videoUrl} type="video/mp4" />
+            <source src={videoData?.videoUrl} type="video/mp4" />
           </video>
           )}
            
          
           {/* TITLE */}
           <h2 className="text-xl font-semibold mt-4">
-            Demo Video Title Sample
+            {videoData?.title}
           </h2>
 
           {/* ---------------- CHANNEL INFO + LIKE BUTTONS ---------------- */}
@@ -54,16 +56,16 @@ function Video() {
 
             {/* LEFT SIDE — CHANNEL INFO */}
             <div className="flex gap-3 items-start">
-                <Link to={'/user/12'}>
+                <Link to={`/user/${videoData?.user?._id}`}>
               <img
-                src="https://cdn.fliki.ai/image/page/660ba680adaa44a37532fd97/6663112070e1cfda27f86585.jpg"
+                src={videoData?.user?.profilePic}
                 alt="channel logo"
                 className="w-12 h-12 rounded-full object-cover"
               />
                 </Link>
               <div className="flex flex-col">
                 <h3 className="font-semibold text-gray-900 text-md">
-                  Channel Name
+                  {videoData?.user?.channelName}
                 </h3>
                 <p className="text-gray-500 text-sm">
                   100K subscribers
@@ -78,24 +80,23 @@ function Video() {
             {/* RIGHT SIDE — LIKE / DISLIKE */}
             <div className="flex items-center gap-3">
               <button className="flex items-center gap-1 bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-full">
-                <AiOutlineLike className="text-lg" /> 100
+                <AiOutlineLike className="text-lg" /> {videoData?.likesCount}
               </button>
 
               <button className="flex items-center gap-1 bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-full">
-                <BiDislike className="text-lg" />
+                <BiDislike className="text-lg" />{videoData?.dislikesCount}
               </button>
             </div>
           </div>
 
           {/* ---------------- DESCRIPTION BOX ---------------- */}
           <div className="bg-gray-100 rounded-xl p-4 mt-5 text-sm">
-            <p className="font-medium">100,000 views · Jan 1, 2025</p>
+            <p className="font-medium">100,000 views · {videoData?.user?.createdAt.slice(0,10)}</p>
 
             <p className="mt-3 text-gray-800 leading-relaxed">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque
-              illum ducimus repellat reiciendis id debitis sit sint perspiciatis
-              accusantium qui veritatis illo, ipsa eaque assumenda fuga earum
-              soluta dolores!
+             {videoData?.description}
+             <br></br>
+             {videoData?.tags}
             </p>
           </div>
 
