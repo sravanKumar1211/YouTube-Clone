@@ -8,7 +8,7 @@ function HomePage({ sideBar }) {
 
    useEffect(()=>{
       axios.get('http://localhost:3000/api/allvideo').then(res=>{
-        console.log(res.data.videos)
+        //console.log(res.data.videos)
         setData(res.data.videos)
       }).catch((err)=>{
         console.log(err);

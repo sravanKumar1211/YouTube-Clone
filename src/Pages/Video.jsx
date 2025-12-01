@@ -9,8 +9,8 @@ import axios from "axios";
 function Video() {
   const SuggestedVideos = [1, 2, 3, 4, 5, 6, 7, 8, 9];
   const [videoData,setVideoData]=useState({})
-  const[comments,SetComments]=useState("")
-  console.log(comments)
+  const[comments,SetComments]=useState([])
+
 
  const { id } = useParams();
   console.log(id)
@@ -19,7 +19,18 @@ function Video() {
     try {
       const response = await axios.get(`http://localhost:3000/api/getvideobyid/${id}`);
       setVideoData(response.data.video);
-      console.log(videoData)
+      //console.log(videoData)
+
+    } catch (err) {
+      console.log(err.message);
+    }
+  };
+
+   const commentsByVideoId = async () => {
+    try {
+      const response = await axios.get(`http://localhost:3000/commentapi/comment/${id}`);
+      SetComments(response.data.comments);
+      console.log(response.data)
 
     } catch (err) {
       console.log(err.message);
@@ -28,6 +39,7 @@ function Video() {
 
   useEffect(() => {
     fetchVideoById();
+    commentsByVideoId()
   }, [id]);
 
 
@@ -132,19 +144,22 @@ function Video() {
           </div>
 
           {/* ---------------- OLD COMMENTS ---------------- */}
-          <div className="mt-6 space-y-5">
+          {
+            comments?.map((item,index)=>{
+              return(
+                     <div className="mt-6 space-y-5" key={index}>
 
             <div className="flex gap-3">
               <img
-                src="https://cdn.fliki.ai/image/page/660ba680adaa44a37532fd97/6663112070e1cfda27f86585.jpg"
+                src={item?.user?.profilePic}
                 className="w-10 h-10 rounded-full"
                 alt="user"
               />
 
               <div>
                 <p className="text-sm">
-                  <span className="font-semibold mr-2">User123</span>
-                  Nice Video!
+                  <span className="font-semibold mr-2">{item?.user?.userName}</span>
+                  {item?.message}
                 </p>
 
                 <div className="flex gap-2 text-gray-600 mt-1">
@@ -154,8 +169,12 @@ function Video() {
             </div>
 
           </div>
-        </div>
-
+       
+              );
+            })
+          }
+         
+           </div>
         {/* ---------------- RIGHT SIDE — SUGGESTED VIDEOS ---------------- */}
         <div className="max-w-[400px] w-full h-[88vh] overflow-y-auto pr-2">
 
