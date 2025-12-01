@@ -11,20 +11,23 @@ function Video() {
   const [videoData,setVideoData]=useState({})
   const[comments,SetComments]=useState("")
   console.log(comments)
-  const {id}=useParams();
+
+ const { id } = useParams();
   console.log(id)
-       const fetchVideoBtId=async()=>{
-        await axios.get(`http://localhost:3000/api/getvideobyid/${id}`).then((response)=>{
-          setVideoData(response.data.video)
-          //console.log(response.data.video)
-          console.log(videoData)
-        }).catch((err)=>{
-          console.log(err.message)
-        })
-     }
-  useEffect(()=>{
-    fetchVideoBtId()
-  },[videoData])
+
+     const fetchVideoById = async () => {
+    try {
+      const response = await axios.get(`http://localhost:3000/api/getvideobyid/${id}`);
+      setVideoData(response.data.video);
+    } catch (err) {
+      console.log(err.message);
+    }
+  };
+
+  useEffect(() => {
+    fetchVideoById();
+  }, [id]);
+
 
   return (
     <>
@@ -34,17 +37,13 @@ function Video() {
         <div className="max-w-[900px] w-full flex flex-col">
 
           {/* VIDEO PLAYER */}
-          <div className="w-full">
-            {videoData &&  <video controls autoPlay className="w-full h-auto rounded-xl shadow-md">
-              <source
-                src={videoData.videoUrl}
-                type="video/mp4"
-              />
-            </video>
-            }
+              {videoData?.videoUrl && (
+          <video controls autoPlay className="w-full h-auto rounded-xl shadow-md">
+            <source src={videoData.videoUrl} type="video/mp4" />
+          </video>
+          )}
            
-          </div>
-
+         
           {/* TITLE */}
           <h2 className="text-xl font-semibold mt-4">
             Demo Video Title Sample
@@ -182,8 +181,7 @@ function Video() {
           ))}
 
         </div>
-
-      </div>
+          </div>
     </>
   );
 }
