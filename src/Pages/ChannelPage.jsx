@@ -72,7 +72,7 @@ function ChannelPage({ sideBar }) {
               </p>
 
               <p className="mt-2 text-sm text-gray-700 max-w-2xl">
-                Channel description goes here. This is sample placeholder text.
+                {channelInfo?.about}
               </p>
 
               {/* BUTTONS */}

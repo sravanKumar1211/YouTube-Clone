@@ -1,203 +1,248 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
+import axios from "axios";
 import googleLogo from "../assets/google.png";
+import {toast,ToastContainer} from 'react-toastify'
+function SignIn() {
+  const CLOUD_NAME = "dzdurdxzw";
+  const UPLOAD_PRESET = "youtube-clone";
 
-function SignIn({ setSigninPopUp }) {
-
-  const [signinField, setSigninField] = useState({
+  const [user, setUser] = useState({
     fullName: "",
+    userName: "",
     email: "",
     password: "",
-    confirmPassword: ""
+    profilePic: "",
   });
 
-  const [errors, setErrors] = useState({
-    fullName: "",
-    email: "",
-    password: "",
-    confirmPassword: ""
+  const [channel, setChannel] = useState({
+    channelName: "",
+    about: "",
+    channelBanner: "",
   });
 
-  const handleOnChangeInput = (e, field) => {
-    setSigninField({ ...signinField, [field]: e.target.value });
-  };
-console.log(signinField)
-  // VALIDATION FUNCTION
-  const validateSignup = () => {
-    let valid = true;
-    let newErrors = { fullName: "", email: "", password: "", confirmPassword: "" };
+  const [errors, setErrors] = useState({});
 
-    // Full Name Validation
-    if (!signinField.fullName.trim() || signinField.fullName.trim().length < 3) {
-      newErrors.fullName = "Full name must be at least 3 characters.";
-      valid = false;
-    } else if (!/^[a-zA-Z ]+$/.test(signinField.fullName)) {
-      newErrors.fullName = "Full name must contain only letters.";
-      valid = false;
-    }
+  // Upload to Cloudinary
+  const uploadFile = async (file, updateState, fieldName) => {
+    if (!file) return;
 
-    // Email Validation
-    if (!signinField.email.trim()) {
-      newErrors.email = "Email is required.";
-      valid = false;
-    } else if (!/^\S+@\S+\.\S+$/.test(signinField.email)) {
-      newErrors.email = "Enter a valid email address.";
-      valid = false;
-    }
+    const form = new FormData();
+    form.append("file", file);
+    form.append("upload_preset", UPLOAD_PRESET);
 
-    // Password Validation
-    const passwordRegex =
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{6,}$/;
-
-    if (!signinField.password) {
-      newErrors.password = "Password is required.";
-      valid = false;
-    } else if (!passwordRegex.test(signinField.password)) {
-      newErrors.password =
-        "Password must include uppercase, lowercase, number, special char & min 6 chars.";
-      valid = false;
-    }
-
-    // Confirm Password Validation
-    if (!signinField.confirmPassword) {
-      newErrors.confirmPassword = "Confirm your password.";
-      valid = false;
-    } else if (signinField.confirmPassword !== signinField.password) {
-      newErrors.confirmPassword = "Passwords do not match.";
-      valid = false;
-    }
-
-    setErrors(newErrors);
-    return valid;
-  };
-
-  // Signup Button Handler
-  const handleSignin = () => {
-    if (validateSignup()) {
-      alert("Signup successful!");
-      setSigninPopUp(false);
+    try {
+      const res = await axios.post(
+        `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/upload`,
+        form
+      );
+      updateState((prev) => ({ ...prev, [fieldName]: res.data.secure_url }));
+    } catch (error) {
+      console.log("Upload Error:", error);
     }
   };
+
+  // Validation
+  const validate = () => {
+    let e = {};
+    let ok = true;
+
+    if (!user.fullName.trim()) (e.fullName = "Required", ok = false);
+    if (!user.userName.trim()) (e.userName = "Required", ok = false);
+
+    if (!/^\S+@\S+\.\S+$/.test(user.email)) {
+      (e.email = "Invalid email"), (ok = false);
+    }
+
+    const passCheck = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/;
+    if (!passCheck.test(user.password)) {
+      e.password = "Weak password";
+      ok = false;
+    }
+
+    if (!channel.channelName.trim()) (e.channelName = "Required", ok = false);
+    if (!channel.about.trim()) (e.about = "Required", ok = false);
+
+    setErrors(e);
+    return ok;
+  };
+const handleSubmit = () => {
+  if (!validate()) {
+    toast.error("Fix form errors before submitting");
+    return;
+  }
+
+  const finalData = { ...user, ...channel };
+
+  axios.post("http://localhost:3000/auth/signup", finalData)
+    .then(res => {
+      toast.success("Account created successfully!");
+      console.log(res.data);
+    })
+    .catch(err => {
+      const msg = err?.response?.data?.message || "Signup failed";
+      toast.error(msg);
+      console.log(err);
+    });
+};
+
 
   return (
-    <>
-      <div className="fixed inset-0 bg-white bg-opacity-40 mt-15 backdrop-blur-sm flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center p-4 z-50">
 
-        <div className="bg-white w-full max-w-md rounded-xl shadow-xl p-8">
+      {/* CARD */}
+      <div className="bg-white rounded-xl w-full max-w-3xl shadow-xl p-8">
 
-          {/* Google Logo */}
-          <div className="flex justify-center">
-            <img src={googleLogo} alt="Google" className="w-12 h-12" />
+        {/* GOOGLE ICON + TITLE */}
+        <div className="text-center">
+          <img src={googleLogo} className="w-10 mx-auto" />
+          <h2 className="text-xl font-semibold mt-2">Create your YouTube account</h2>
+          <p className="text-gray-600 text-sm">A single account for all services</p>
+        </div>
+
+        {/* FORM GRID */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
+
+          {/* USER DETAILS */}
+          <div>
+            <h3 className="font-medium mb-3">User Info</h3>
+
+            <div className="space-y-4">
+              <Input
+                placeholder="Full Name"
+                value={user.fullName}
+                onChange={(e) => setUser({ ...user, fullName: e.target.value })}
+                error={errors.fullName}
+              />
+
+              <Input
+                placeholder="Username"
+                value={user.userName}
+                onChange={(e) => setUser({ ...user, userName: e.target.value })}
+                error={errors.userName}
+              />
+
+              <Input
+                type="email"
+                placeholder="Email"
+                value={user.email}
+                onChange={(e) => setUser({ ...user, email: e.target.value })}
+                error={errors.email}
+              />
+
+              <Input
+                type="password"
+                placeholder="Password"
+                value={user.password}
+                onChange={(e) => setUser({ ...user, password: e.target.value })}
+                error={errors.password}
+              />
+            </div>
           </div>
 
-          <h2 className="text-2xl font-semibold text-center mt-4">Sign In</h2>
+          {/* CHANNEL DETAILS */}
+          <div>
+            <h3 className="font-medium mb-3">Channel Info</h3>
 
-          <p className="text-center text-gray-600 mt-1 mb-6 text-sm">
-            Create your account on <span className="font-medium">ProTube</span>
-          </p>
+            <div className="space-y-4">
+              <Input
+                placeholder="Channel Name"
+                value={channel.channelName}
+                onChange={(e) =>
+                  setChannel({ ...channel, channelName: e.target.value })
+                }
+                error={errors.channelName}
+              />
 
-          {/* FULL NAME */}
-          <div className="mt-4">
-            <input
-              type="text"
-              placeholder="Enter Full Name"
-              value={signinField.fullName}
-              onChange={(e) => handleOnChangeInput(e, "fullName")}
-              className={`w-full border px-4 py-3 rounded-md text-sm focus:ring-2 ${
-                errors.fullName
-                  ? "border-red-500 focus:ring-red-300"
-                  : "border-gray-300 focus:ring-blue-500"
-              }`}
-            />
-            {errors.fullName && (
-              <p className="text-red-500 text-xs mt-1">{errors.fullName}</p>
-            )}
+              <textarea
+                placeholder="Channel Description"
+                value={channel.about}
+                onChange={(e) =>
+                  setChannel({ ...channel, about: e.target.value })
+                }
+                className="w-full border rounded-lg px-3 py-2 h-24 text-sm"
+              ></textarea>
+              {errors.about && <p className="text-red-500 text-xs">{errors.about}</p>}
+            </div>
           </div>
+        </div>
 
-          {/* EMAIL */}
-          <div className="mt-4">
-            <input
-              type="email"
-              placeholder="Email"
-              value={signinField.email}
-              onChange={(e) => handleOnChangeInput(e, "email")}
-              className={`w-full border px-4 py-3 rounded-md text-sm focus:ring-2 ${
-                errors.email
-                  ? "border-red-500 focus:ring-red-300"
-                  : "border-gray-300 focus:ring-blue-500"
-              }`}
-            />
-            {errors.email && (
-              <p className="text-red-500 text-xs mt-1">{errors.email}</p>
-            )}
+        {/* IMAGE UPLOAD SECTION */}
+        <div className="mt-10">
+          <h3 className="font-medium mb-4">Profile & Banner</h3>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+
+            {/* Profile Preview */}
+            <div>
+              <p className="text-sm font-medium">Profile Picture</p>
+              <img
+                src={user.profilePic || "https://via.placeholder.com/100"}
+                className="w-20 h-20 rounded-full object-cover mt-2 border"
+              />
+              <input
+                type="file"
+                className="mt-2 text-sm"
+                onChange={(e) =>
+                  uploadFile(e.target.files[0], setUser, "profilePic")
+                }
+              />
+            </div>
+
+            {/* Banner Preview */}
+            <div>
+              <p className="text-sm font-medium">Channel Banner</p>
+              <img
+                src={channel.channelBanner || "https://via.placeholder.com/300x100"}
+                className="w-full h-20 object-cover rounded-lg mt-2 border"
+              />
+              <input
+                type="file"
+                className="mt-2 text-sm"
+                onChange={(e) =>
+                  uploadFile(e.target.files[0], setChannel, "channelBanner")
+                }
+              />
+            </div>
+
           </div>
+        </div>
 
-          {/* PASSWORD */}
-          <div className="mt-4">
-            <input
-              type="password"
-              placeholder="Enter password"
-              value={signinField.password}
-              onChange={(e) => handleOnChangeInput(e, "password")}
-              className={`w-full border px-4 py-3 rounded-md text-sm focus:ring-2 ${
-                errors.password
-                  ? "border-red-500 focus:ring-red-300"
-                  : "border-gray-300 focus:ring-blue-500"
-              }`}
-            />
-            {errors.password && (
-              <p className="text-red-500 text-xs mt-1">{errors.password}</p>
-            )}
-          </div>
-
-          {/* CONFIRM PASSWORD */}
-          <div className="mt-4">
-            <input
-              type="password"
-              placeholder="Confirm password"
-              value={signinField.confirmPassword}
-              onChange={(e) => handleOnChangeInput(e, "confirmPassword")}
-              className={`w-full border px-4 py-3 rounded-md text-sm focus:ring-2 ${
-                errors.confirmPassword
-                  ? "border-red-500 focus:ring-red-300"
-                  : "border-gray-300 focus:ring-blue-500"
-              }`}
-            />
-            {errors.confirmPassword && (
-              <p className="text-red-500 text-xs mt-1">{errors.confirmPassword}</p>
-            )}
-          </div>
-
-          {/* Divider */}
-          <div className="flex items-center my-6">
-            <div className="flex-1 border-t border-gray-300"></div>
-            <span className="px-3 text-gray-500 text-sm">or</span>
-            <div className="flex-1 border-t border-gray-300"></div>
-          </div>
-
-          {/* GOOGLE SIGNIN */}
-          <button className="w-full flex items-center justify-center gap-3 border border-gray-300 px-4 py-3 rounded-md hover:bg-gray-50">
-            <img src={googleLogo} className="w-6 h-6" alt="Google Icon" />
-            <span className="text-sm font-medium">Sign in with Google</span>
+        {/* FOOTER */}
+        <div className="flex justify-between items-center mt-10">
+          <button
+            className="text-blue-600 text-sm"
+          >
+            Already have an account?
           </button>
 
-          {/* Footer Buttons */}
-          <div className="flex justify-between items-center mt-8">
-            <button className="text-blue-600 text-sm font-medium hover:underline">
-              Already have an account?
-            </button>
-
-            <button
-              className="bg-blue-600 text-white px-6 py-2 rounded-md text-sm font-medium hover:bg-blue-700"
-              onClick={handleSignin}
-            >
-              Sign In
-            </button>
-          </div>
-
+          <button
+            className="bg-blue-600 text-white px-6 py-2 rounded-lg text-sm hover:bg-blue-700"
+            onClick={handleSubmit}
+          >
+            Create account
+          </button>
         </div>
+
       </div>
+      <ToastContainer></ToastContainer>
+    </div>
+  );
+}
+
+// Reusable Input Component
+function Input({ error, ...props }) {
+  return (
+    <>
+      <input
+        {...props}
+        className={`w-full border rounded-lg px-3 py-2 text-sm ${
+          error ? "border-red-500" : "border-gray-300"
+        }`}
+      />
+      {error && <p className="text-red-500 text-xs">{error}</p>}
     </>
   );
 }
 
 export default SignIn;
+

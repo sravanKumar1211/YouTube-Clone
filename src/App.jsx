@@ -6,6 +6,7 @@ import {Route,Routes} from 'react-router-dom'
 import Video from './Pages/Video';
 import ChannelPage from './Pages/ChannelPage';
 import VideoUploard from './Pages/VideoUploard';
+import SignIn from './Components/SignIn'
 
 function App() {
   const[sideBar,setSideBar]=useState(true);// state that holds the boolion valof sideBar when HamburgerMenu clicked
@@ -23,6 +24,7 @@ function App() {
       <Route path ='/watch/:id' element={<Video></Video>}></Route>
       <Route path ='/user/:id' element={<ChannelPage sideBar={sideBar}></ChannelPage>}></Route>
       <Route path ='/:id/uploard' element={<VideoUploard></VideoUploard>}></Route>
+      <Route path ='/signin' element={<SignIn></SignIn>}></Route>
 
     </Routes>
     </>

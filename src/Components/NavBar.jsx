@@ -16,8 +16,6 @@ function NavBar({ sideBarFn, sideBar }) {
   const [isLoggedIn, setIsLoggedIn] = useState(false); // backend will update later
   const [openMenu, setOpenMenu] = useState(false);  // for dropdown toggle
   const [createMenu, setCreateMenu] = useState(false);
-  const [loginOpoup, setLoginPopUp] = useState(false);
-  const [signinOpoup, setSigninPopUp] = useState(false);
   const navigate = useNavigate();
 
 
@@ -128,17 +126,18 @@ function NavBar({ sideBarFn, sideBar }) {
                   <>
                     <button
                       className="w-full text-left px-4 py-2 hover:bg-gray-100"
-                      onClick={() =>{setIsLoggedIn(true),setOpenMenu(false),setLoginPopUp(true)}} // later call backend
+                      onClick={() =>{setIsLoggedIn(true),setOpenMenu(false)}} // later call backend
                     >
                       Login
                     </button>
-
+                      <Link to={'/signin'}>
                     <button
                       className="w-full text-left px-4 py-2 hover:bg-gray-100"
-                      onClick={() => {setOpenMenu(false),setSigninPopUp(true)}} // signup UI later
+                      onClick={() => {setOpenMenu(false)}} // signup UI later
                     >
                       Sign Up
                     </button>
+                    </Link>
                   </>
                 )}
 
@@ -158,13 +157,7 @@ function NavBar({ sideBarFn, sideBar }) {
               </div>
             )}
           </div>
-          {
-            loginOpoup && <Login setLoginPopUp={setLoginPopUp}></Login>
-            
-          }
-          {
-            signinOpoup && <SignIn setSigninPopUp={setSigninPopUp}></SignIn>
-          }
+       
 
         </div>
       </div>
