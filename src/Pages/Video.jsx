@@ -1,12 +1,30 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { AiOutlineLike } from "react-icons/ai";
 import { BiDislike } from "react-icons/bi";
 import { Link } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import axios from "axios";
+
 
 function Video() {
   const SuggestedVideos = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+  const [videoData,setVideoData]=useState({})
   const[comments,SetComments]=useState("")
   console.log(comments)
+  const {id}=useParams();
+  console.log(id)
+       const fetchVideoBtId=async()=>{
+        await axios.get(`http://localhost:3000/api/getvideobyid/${id}`).then((response)=>{
+          setVideoData(response.data.video)
+          //console.log(response.data.video)
+          console.log(videoData)
+        }).catch((err)=>{
+          console.log(err.message)
+        })
+     }
+  useEffect(()=>{
+    fetchVideoBtId()
+  },[videoData])
 
   return (
     <>
@@ -17,12 +35,14 @@ function Video() {
 
           {/* VIDEO PLAYER */}
           <div className="w-full">
-            <video controls autoPlay className="w-full h-auto rounded-xl shadow-md">
+            {videoData &&  <video controls autoPlay className="w-full h-auto rounded-xl shadow-md">
               <source
-                src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+                src={videoData.videoUrl}
                 type="video/mp4"
               />
             </video>
+            }
+           
           </div>
 
           {/* TITLE */}

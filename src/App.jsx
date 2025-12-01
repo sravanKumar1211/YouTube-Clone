@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import axios from 'axios'
 import NavBar from './Components/NavBar'
 import Home from './Pages/Home'
 import {Route,Routes} from 'react-router-dom'
@@ -9,6 +10,9 @@ import VideoUploard from './Pages/VideoUploard';
 function App() {
   const[sideBar,setSideBar]=useState(true);// state that holds the boolion valof sideBar when HamburgerMenu clicked
   const sideBarFn=(val)=>{ setSideBar(val)};//function for handling sidebar val
+
+  
+
   return (
     <>
      {/* passed sidebar function and state to capture state and value */}

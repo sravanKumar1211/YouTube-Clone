@@ -3,6 +3,7 @@ import SideBar from '../Components/SideBar'
 import HomePage from '../Components/HomePage'
 
 function Home({sideBar}) {
+  
   return (
     <>
    

@@ -1,9 +1,19 @@
-
-import React from "react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 
 function HomePage({ sideBar }) {
+  const [data,setData]=useState([])
+
+   useEffect(()=>{
+      axios.get('http://localhost:3000/api/allvideo').then(res=>{
+        console.log(res.data.videos)
+        setData(res.data.videos)
+      }).catch((err)=>{
+        console.log(err);
+      })
+    })
 
   const categories = [
     "All","Software","News","Sports","Gaming","Tollywood","Bollywood","Music",
@@ -11,7 +21,7 @@ function HomePage({ sideBar }) {
     "Fitness","Technology","Trending","Live"
   ];
 
-  const videos = Array.from({ length: 30 });
+ 
 
   return (
     <div className=" w-full min-h-screen bg-white mt-[-40px]">
@@ -51,15 +61,15 @@ function HomePage({ sideBar }) {
               : "repeat(4, minmax(0, 1fr))",  // 4 cards (sidebar closed)
           }}
         >
-          {videos.map((_, i) => (
+          {data?.map((item, i) => (
            
             <div key={i} className="cursor-pointer">
 
-                 <Link to={'/watch/12'}>
+                 <Link to={`/watch/${item._id}`}>
               {/* Thumbnail */}
               <div className="relative w-full h-64 bg-gray-200 rounded-xl overflow-hidden">
                 <img
-                  src="https://cdn.fliki.ai/image/page/660ba680adaa44a37532fd97/6663112070e1cfda27f86585.jpg"
+                  src={item.thumbnailUrl}
                   alt="Thumbnail"
                   className="w-full h-full object-cover"
                 />
@@ -74,16 +84,16 @@ function HomePage({ sideBar }) {
                <Link to={'/user/12'}>
               <div className="flex gap-3 mt-3">
                 <img
-                  src="https://cdn.fliki.ai/image/page/660ba680adaa44a37532fd97/6663112070e1cfda27f86585.jpg"
+                  src={item.user.profilePic}
                   alt="Channel Icon"
                   className="w-10 h-10 rounded-full"
                 />
 
                 <div className="flex flex-col">
                   <h3 className="text-sm font-semibold leading-tight">
-                    Welcome to the Channel
+                    {item.title}
                   </h3>
-                  <p className="text-xs text-gray-600">Channel Name</p>
+                  <p className="text-xs text-gray-600">{item.user.channelName}</p>
                   <p className="text-xs text-gray-600">100 views • 10 days ago</p>
                 </div>
               </div>
