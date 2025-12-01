@@ -2,7 +2,7 @@ import React from "react";
 import SideBar from "../Components/SideBar";
 import { Link } from "react-router-dom";
 
-function ProfilePage({ sideBar }) {
+function ChannelPage({ sideBar }) {
   const channelVideos = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
   return (
@@ -132,4 +132,4 @@ function ProfilePage({ sideBar }) {
   );
 }
 
-export default ProfilePage;
+export default ChannelPage;

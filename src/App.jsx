@@ -4,7 +4,7 @@ import NavBar from './Components/NavBar'
 import Home from './Pages/Home'
 import {Route,Routes} from 'react-router-dom'
 import Video from './Pages/Video';
-import PofilePage from './Pages/PofilePage';
+import ChannelPage from './Pages/ChannelPage';
 import VideoUploard from './Pages/VideoUploard';
 
 function App() {
@@ -21,7 +21,7 @@ function App() {
     <Routes>
       <Route path ='/' element={<Home sideBar={sideBar}></Home>}></Route>
       <Route path ='/watch/:id' element={<Video></Video>}></Route>
-      <Route path ='/user/:id' element={<PofilePage sideBar={sideBar}></PofilePage>}></Route>
+      <Route path ='/user/:id' element={<ChannelPage sideBar={sideBar}></ChannelPage>}></Route>
       <Route path ='/:id/uploard' element={<VideoUploard></VideoUploard>}></Route>
 
     </Routes>
