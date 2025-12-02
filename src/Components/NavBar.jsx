@@ -1,65 +1,75 @@
 import React, { useEffect, useState } from "react";
 import logo from "../assets/youtube.png";
 import { IoMenu, IoSearchSharp } from "react-icons/io5";
-import { FaVideo } from "react-icons/fa";
-import { CiStreamOn } from "react-icons/ci";
-import { FaMicrophone, FaBell, FaPlus } from "react-icons/fa";
+import { FaVideo, FaMicrophone, FaBell, FaPlus } from "react-icons/fa";
 import { CgProfile } from "react-icons/cg";
 import { Link, useNavigate } from "react-router-dom";
-import Login from "./Login";
-import SignIn from "./SignIn";
 import axios from "axios";
 
-
-
 function NavBar({ sideBarFn, sideBar }) {
-  const [userPic, setUserPic] = useState(null);     // will come from backend later
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // backend will update later
-  const [openMenu, setOpenMenu] = useState(false);  // for dropdown toggle
+  const [userPic, setUserPic] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [openMenu, setOpenMenu] = useState(false);
   const [createMenu, setCreateMenu] = useState(false);
   const navigate = useNavigate();
-  const userId=localStorage.getItem('userId')
-  useEffect(()=>{
-      let userPofilePic= localStorage.getItem('userProfilePic')
-      if(userPofilePic){
-        setUserPic(userPofilePic)
-        console.log(userPic)
-        setIsLoggedIn(true)
-      }
-  },[])
 
+  // Load user on navbar mount
+  useEffect(() => {
+    const pic = localStorage.getItem("userProfilePic");
+    if (pic) {
+      setUserPic(pic);
+      setIsLoggedIn(true); 
+    }
+  }, []);
 
-  const handleHamburger = () => {
-    sideBarFn(!sideBar)// function to handle click on hamburger it passes clicked val to that function nugates the orginal val
-  }
+ 
 
+  //Logout handler
   const handleLogout = async () => {
-  try {
-    await axios.post('http://localhost:3000/auth/logout', {}, { withCredentials: true });
+    try {
+      await axios.post(
+        "http://localhost:3000/auth/logout",
+        {},
+        { withCredentials: true }
+      );
 
-    localStorage.clear();
-    setIsLoggedIn(false);
-    setUserPic(null);
-    setTimeout(()=>{
-      navigate('/')
-      window.location.reload();
-    },1000)
-  } catch (err) {
-    console.log(err.message);
-  }
-};
+      localStorage.removeItem("userProfilePic");
+      localStorage.removeItem("userId");
+      localStorage.removeItem("token");
+
+      setIsLoggedIn(false);
+      setUserPic(null);
+      setOpenMenu(false);
+
+      navigate("/");
+    } catch (err) {
+      console.log("Logout Error:", err.message);
+    }
+  };
+
+//   fetch("http://localhost:3000/auth/logout", {
+//   method: "POST",
+//   credentials: "include"
+// })
+// .then(r => { console.log("fetch response", r.status); return r.text(); })
+// .then(t => console.log("body:", t))
+// .catch(e => console.error("fetch error:", e));
 
 
   return (
     <>
       <div className="flex items-center justify-between px-4 py-2 bg-white fixed top-0 left-0 right-0 z-50 shadow-md">
 
-        {/* ===== Left Section ===== */}
+        {/* LEFT SECTION */}
         <div className="flex items-center gap-4">
-          <button className="text-2xl p-1 hover:bg-gray-200 rounded-full cursor-pointer" onClick={handleHamburger}>
+          <button
+            className="text-2xl p-1 hover:bg-gray-200 rounded-full"
+            onClick={() => sideBarFn(!sideBar)}
+          >
             <IoMenu />
           </button>
-          <Link to={'/'}>
+
+          <Link to={"/"}>
             <div className="flex items-center gap-1 cursor-pointer">
               <img src={logo} alt="Logo" className="h-6" />
               <span className="text-lg">ProTube</span>
@@ -67,7 +77,7 @@ function NavBar({ sideBarFn, sideBar }) {
           </Link>
         </div>
 
-        {/* ===== Center Section (Search) ===== */}
+        {/* SEARCH BAR */}
         <div className="flex items-center w-[45%] max-md:w-[60%]">
           <div className="flex items-center w-full border border-gray-300 rounded-full overflow-hidden">
             <input
@@ -79,99 +89,98 @@ function NavBar({ sideBarFn, sideBar }) {
               <IoSearchSharp className="text-xl" />
             </button>
           </div>
+
           <button className="ml-3 text-lg bg-gray-100 p-2 rounded-full hover:bg-gray-200">
             <FaMicrophone />
           </button>
         </div>
 
-
-
-        {/* ===== Right Section ===== */}
+        {/* RIGHT SECTION */}
         <div className="flex items-center gap-5 text-xl">
 
           {/* CREATE BUTTON */}
           <div className="relative">
             <button
-              className="flex items-center gap-2 text-sm bg-gray-100 px-3 py-1 rounded-full cursor-pointer hover:bg-gray-200"
+              className="flex items-center gap-2 text-sm bg-gray-100 px-3 py-1 rounded-full hover:bg-gray-200"
               onClick={() => setCreateMenu(!createMenu)}
             >
               <FaPlus /> Create
             </button>
 
-            {/* CREATE DROPDOWN */}
             {createMenu && (
-              <div className="absolute right-0 mt-2 w-40 bg-white shadow-lg border rounded-md py-2 text-sm z-50">
-
+              <div className="absolute right-0 mt-2 w-40 bg-white shadow-lg border rounded-md py-2 text-sm">
                 <button
-                  className="w-full flex text-left px-4 py-2 hover:bg-gray-100 justify-center gap-1"
+                  className="w-full flex justify-center gap-1 px-4 py-2 hover:bg-gray-100"
                   onClick={() => {
                     setCreateMenu(false);
-                    navigate("/122/uploard");
+                    navigate("/122/upload");
                   }}
                 >
                   Upload Video <FaVideo />
                 </button>
-                  <Link to={'/user/userId'}>
+
                 <button
-                  className="w-full flex text-left px-4 py-2 justify-center gap-1 hover:bg-gray-100"
+                  className="w-full flex justify-center gap-1 px-4 py-2 hover:bg-gray-100"
                   onClick={() => {
                     setCreateMenu(false);
-                    navigate("/user/userId");
+                    navigate(`/user/${localStorage.getItem("userId")}`);
                   }}
                 >
-                  GoTo Channel
+                  Go To Channel
                 </button>
-                </Link>
-
               </div>
             )}
           </div>
 
-          {/* NOTIFICATION ICON */}
-          <button className="relative cursor-pointer hover:bg-gray-200 p-2 rounded-full">
+          {/* NOTIFICATIONS */}
+          <button className="relative p-2 rounded-full hover:bg-gray-200">
             <FaBell />
             <span className="absolute top-0 right-0 bg-red-600 text-white text-xs px-1 rounded-full">
               9+
             </span>
           </button>
 
-
-          {/* ===== Profile + Dropdown ===== */}
+          {/* PROFILE + DROPDOWN */}
           <div className="relative">
-            <button className="cursor-pointer" onClick={() => setOpenMenu(!openMenu)}>
+            <button
+              className="cursor-pointer"
+              onClick={() => setOpenMenu(!openMenu)}
+            >
               {userPic ? (
-                <img src={userPic} alt="Profile" className="h-8 w-8 rounded-full object-cover" />
+                <img
+                  src={userPic}
+                  alt="Profile"
+                  className="h-8 w-8 rounded-full object-cover"
+                />
               ) : (
                 <CgProfile className="text-2xl" />
               )}
             </button>
 
-            {/* Dropdown */}
             {openMenu && (
               <div className="absolute right-0 mt-2 w-36 bg-white shadow-lg border rounded-md py-2 text-sm">
 
-                {!isLoggedIn && (
+                {!isLoggedIn ? (
                   <>
-                  <Link to={'/login'}>
-                    <button
-                      className="w-full text-left px-4 py-2 hover:bg-gray-100"
-                      onClick={() =>{setIsLoggedIn(true),setOpenMenu(false)}} // later call backend
-                    >
-                      Login
-                    </button>
+                    <Link to={"/login"}>
+                      <button
+                        className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                        onClick={() => setOpenMenu(false)}
+                      >
+                        Login
+                      </button>
                     </Link>
-                      <Link to={'/signin'}>
-                    <button
-                      className="w-full text-left px-4 py-2 hover:bg-gray-100"
-                      onClick={() => {setOpenMenu(false)}} // signup UI later
-                    >
-                      Sign Up
-                    </button>
+
+                    <Link to={"/signin"}>
+                      <button
+                        className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                        onClick={() => setOpenMenu(false)}
+                      >
+                        Sign Up
+                      </button>
                     </Link>
                   </>
-                )}
-
-                {isLoggedIn && (
+                ) : (
                   <button
                     className="w-full text-left px-4 py-2 hover:bg-gray-100"
                     onClick={handleLogout}
@@ -179,11 +188,9 @@ function NavBar({ sideBarFn, sideBar }) {
                     Logout
                   </button>
                 )}
-
               </div>
             )}
           </div>
-       
 
         </div>
       </div>
@@ -192,17 +199,6 @@ function NavBar({ sideBarFn, sideBar }) {
 }
 
 export default NavBar;
-
-
-
-
-
-
-
-
-
-
-
 
 
 

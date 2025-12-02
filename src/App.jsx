@@ -24,7 +24,7 @@ function App() {
       <Route path ='/' element={<Home sideBar={sideBar}></Home>}></Route>
       <Route path ='/watch/:id' element={<Video></Video>}></Route>
       <Route path ='/user/:id' element={<ChannelPage sideBar={sideBar}></ChannelPage>}></Route>
-      <Route path ='/:id/uploard' element={<VideoUploard></VideoUploard>}></Route>
+      <Route path ='/:id/upload' element={<VideoUploard></VideoUploard>}></Route>
       <Route path ='/signin' element={<SignIn></SignIn>}></Route>
       <Route path ='/login' element={<Login></Login>}></Route>
 
