@@ -2,9 +2,14 @@ import React, { useState } from "react";
 import axios from "axios";
 import googleLogo from "../assets/google.png";
 import {toast,ToastContainer} from 'react-toastify'
+import { Link, useNavigate } from "react-router-dom";
+
+
+
 function SignIn() {
   const CLOUD_NAME = "dzdurdxzw";
   const UPLOAD_PRESET = "youtube-clone";
+  const navigate=useNavigate()
 
   const [user, setUser] = useState({
     fullName: "",
@@ -77,6 +82,7 @@ const handleSubmit = () => {
     .then(res => {
       toast.success("Account created successfully!");
       console.log(res.data);
+       navigate('/')
     })
     .catch(err => {
       const msg = err?.response?.data?.message || "Signup failed";
@@ -209,12 +215,13 @@ const handleSubmit = () => {
 
         {/* FOOTER */}
         <div className="flex justify-between items-center mt-10">
+          <Link to={'/login'}>
           <button
             className="text-blue-600 text-sm"
           >
             Already have an account?
           </button>
-
+                </Link>
           <button
             className="bg-blue-600 text-white px-6 py-2 rounded-lg text-sm hover:bg-blue-700"
             onClick={handleSubmit}

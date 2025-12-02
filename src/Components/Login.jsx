@@ -1,16 +1,25 @@
 
 import React, { useState } from "react";
 import googleLogo from "../assets/google.png";
+import { Link, useNavigate } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import axios from "axios";
 
-function Login({ setLoginPopUp }) {
+
+
+
+function Login() {
+   const navigate=useNavigate()
+
   const [loginField, setLoginField] = useState({
-    fullName: "",
+    userName: "",
     email: "",
     password: "",
   });
 
   const [errors, setErrors] = useState({
-    fullName: "",
+    userName: "",
     email: "",
     password: "",
   });
@@ -23,14 +32,14 @@ console.log(loginField)
   // VALIDATION FUNCTION
   const validate = () => {
     let valid = true;
-    let newErrors = { fullName: "", email: "", password: "" };
+    let newErrors = { userName: "", email: "", password: "" };
 
     // Full name: at least 3 chars, letters only
-    if (!loginField.fullName.trim() || loginField.fullName.trim().length < 3) {
-      newErrors.fullName = "Full name must be at least 3 characters.";
+    if (!loginField.userName.trim() || loginField.userName.trim().length < 3) {
+      newErrors.userName = "Full name must be at least 3 characters.";
       valid = false;
-    } else if (!/^[a-zA-Z ]+$/.test(loginField.fullName)) {
-      newErrors.fullName = "Name must contain only letters.";
+    } else if (!/^[a-zA-Z ]+$/.test(loginField.userName)) {
+      newErrors.userName = "Name must contain only letters.";
       valid = false;
     }
 
@@ -62,10 +71,20 @@ console.log(loginField)
   };
 
   // LOGIN CLICK HANDLER
-  const handleLogin = () => {
+  const handleLogin = async() => {
     if (validate()) {
-      alert("Login Successful!");
-      setLoginPopUp(false); // Close popup
+      axios.post('http://localhost:3000/auth/login',loginField).then((res)=>{
+        localStorage.setItem("token",res.data.token)
+        localStorage.setItem("userId",res.data.user._id)
+        localStorage.setItem("userProfilePic",res.data.user.profilePic)
+        navigate('/')
+        console.log(res)
+      }).catch((err)=>{
+        toast.error("Invalid Credentials")
+        console.log(err.message)
+
+      })
+      
     }
   };
 
@@ -90,17 +109,17 @@ console.log(loginField)
           <div className="mt-4">
             <input
               type="text"
-              placeholder="Enter full name"
-              value={loginField.fullName}
-              onChange={(e) => handleOnChangeInput(e, "fullName")}
+              placeholder="userName"
+              value={loginField.userName}
+              onChange={(e) => handleOnChangeInput(e, "userName")}
               className={`w-full border px-4 py-3 rounded-md text-sm focus:ring-2 ${
-                errors.fullName
+                errors.userName
                   ? "border-red-500 focus:ring-red-300"
                   : "border-gray-300 focus:ring-blue-500"
               }`}
             />
-            {errors.fullName && (
-              <p className="text-red-500 text-xs mt-1">{errors.fullName}</p>
+            {errors.userName && (
+              <p className="text-red-500 text-xs mt-1">{errors.userName}</p>
             )}
           </div>
 
@@ -163,10 +182,11 @@ console.log(loginField)
 
           {/* Footer Buttons */}
           <div className="flex justify-between items-center mt-8">
-            <button className="text-blue-600 text-sm font-medium hover:underline">
+            <Link to={'/signin'}>
+            <button className="text-blue-600 text-sm font-medium hover:underline"  >
               Create account
             </button>
-
+            </Link>
             <button
               className="bg-blue-600 text-white px-6 py-2 rounded-md text-sm font-medium hover:bg-blue-700"
               onClick={handleLogin}
@@ -175,6 +195,7 @@ console.log(loginField)
             </button>
           </div>
         </div>
+        <ToastContainer></ToastContainer>
       </div>
     </>
   );

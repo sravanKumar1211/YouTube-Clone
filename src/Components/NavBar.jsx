@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import logo from "../assets/youtube.png";
 import { IoMenu, IoSearchSharp } from "react-icons/io5";
 import { FaVideo } from "react-icons/fa";
@@ -8,6 +8,7 @@ import { CgProfile } from "react-icons/cg";
 import { Link, useNavigate } from "react-router-dom";
 import Login from "./Login";
 import SignIn from "./SignIn";
+import axios from "axios";
 
 
 
@@ -17,11 +18,37 @@ function NavBar({ sideBarFn, sideBar }) {
   const [openMenu, setOpenMenu] = useState(false);  // for dropdown toggle
   const [createMenu, setCreateMenu] = useState(false);
   const navigate = useNavigate();
+  const userId=localStorage.getItem('userId')
+  useEffect(()=>{
+      let userPofilePic= localStorage.getItem('userProfilePic')
+      if(userPofilePic){
+        setUserPic(userPofilePic)
+        console.log(userPic)
+        setIsLoggedIn(true)
+      }
+  },[])
 
 
   const handleHamburger = () => {
     sideBarFn(!sideBar)// function to handle click on hamburger it passes clicked val to that function nugates the orginal val
   }
+
+  const handleLogout = async () => {
+  try {
+    await axios.post('http://localhost:3000/auth/logout', {}, { withCredentials: true });
+
+    localStorage.clear();
+    setIsLoggedIn(false);
+    setUserPic(null);
+    setTimeout(()=>{
+      navigate('/')
+      window.location.reload();
+    },1000)
+  } catch (err) {
+    console.log(err.message);
+  }
+};
+
 
   return (
     <>
@@ -84,16 +111,17 @@ function NavBar({ sideBarFn, sideBar }) {
                 >
                   Upload Video <FaVideo />
                 </button>
-
+                  <Link to={'/user/userId'}>
                 <button
                   className="w-full flex text-left px-4 py-2 justify-center gap-1 hover:bg-gray-100"
                   onClick={() => {
                     setCreateMenu(false);
-                    navigate("/user/122");
+                    navigate("/user/userId");
                   }}
                 >
-                  Go Live <CiStreamOn />
+                  GoTo Channel
                 </button>
+                </Link>
 
               </div>
             )}
@@ -124,12 +152,14 @@ function NavBar({ sideBarFn, sideBar }) {
 
                 {!isLoggedIn && (
                   <>
+                  <Link to={'/login'}>
                     <button
                       className="w-full text-left px-4 py-2 hover:bg-gray-100"
                       onClick={() =>{setIsLoggedIn(true),setOpenMenu(false)}} // later call backend
                     >
                       Login
                     </button>
+                    </Link>
                       <Link to={'/signin'}>
                     <button
                       className="w-full text-left px-4 py-2 hover:bg-gray-100"
@@ -144,11 +174,7 @@ function NavBar({ sideBarFn, sideBar }) {
                 {isLoggedIn && (
                   <button
                     className="w-full text-left px-4 py-2 hover:bg-gray-100"
-                    onClick={() => {
-                      setIsLoggedIn(false);
-                      setUserPic(null);
-                      
-                    }}
+                    onClick={handleLogout}
                   >
                     Logout
                   </button>

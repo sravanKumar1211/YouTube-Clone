@@ -7,6 +7,7 @@ import Video from './Pages/Video';
 import ChannelPage from './Pages/ChannelPage';
 import VideoUploard from './Pages/VideoUploard';
 import SignIn from './Components/SignIn'
+import Login from './Components/Login'
 
 function App() {
   const[sideBar,setSideBar]=useState(true);// state that holds the boolion valof sideBar when HamburgerMenu clicked
@@ -25,6 +26,7 @@ function App() {
       <Route path ='/user/:id' element={<ChannelPage sideBar={sideBar}></ChannelPage>}></Route>
       <Route path ='/:id/uploard' element={<VideoUploard></VideoUploard>}></Route>
       <Route path ='/signin' element={<SignIn></SignIn>}></Route>
+      <Route path ='/login' element={<Login></Login>}></Route>
 
     </Routes>
     </>
