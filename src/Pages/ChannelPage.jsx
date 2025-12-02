@@ -4,7 +4,7 @@ import { Link, useParams } from "react-router-dom";
 import axios from "axios";
 
 function ChannelPage({ sideBar }) {
-
+const user = JSON.parse(localStorage.getItem("user"));
   const { id } = useParams();
 
   // API returns: { success: true, video: [ ... ] }
@@ -46,7 +46,7 @@ function ChannelPage({ sideBar }) {
           {/* CHANNEL BANNER */}
           <div className="w-full h-48 bg-gray-300 rounded-xl overflow-hidden">
             <img
-              src="https://png.pngtree.com/thumb_back/fh260/background/20240919/pngtree-a-background-of-orange-blue-and-yellow-gradients-with-gritty-appearance-image_16233934.jpg"
+              src={user?.channelBanner}
               className="w-full h-full object-cover"
               alt="Channel Banner"
             />
@@ -57,7 +57,7 @@ function ChannelPage({ sideBar }) {
 
             {/* CHANNEL ICON */}
             <img
-              src={channelInfo?.profilePic}
+              src={user?.profilePic}
               className="w-28 h-28 rounded-full object-cover border"
               alt="Channel Icon"
             />
@@ -65,15 +65,15 @@ function ChannelPage({ sideBar }) {
             {/* NAME + STATS */}
             <div className="flex flex-col">
               <h1 className="text-3xl font-bold">
-                {channelInfo?.channelName}
+                {user?.channelName}
               </h1>
 
               <p className="text-gray-600 text-sm mt-1">
-                @{channelInfo?.userName} • {channelVideos.length} videos
+                @{user?.userName} • {channelVideos.length} videos
               </p>
 
               <p className="mt-2 text-sm text-gray-700 max-w-2xl">
-                {channelInfo?.about}
+                {user?.about}
               </p>
 
               {/* BUTTONS */}
