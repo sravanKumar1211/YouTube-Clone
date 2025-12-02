@@ -73,10 +73,11 @@ console.log(loginField)
   // LOGIN CLICK HANDLER
   const handleLogin = async() => {
     if (validate()) {
-      axios.post('http://localhost:3000/auth/login',loginField).then((res)=>{
+      axios.post('http://localhost:3000/auth/login',loginField,{withCredentials:true}).then((res)=>{
         localStorage.setItem("token",res.data.token)
-        localStorage.setItem("userId",res.data.user._id)
-        localStorage.setItem("userProfilePic",res.data.user.profilePic)
+        localStorage.setItem("user", JSON.stringify(res.data.user));
+        const user = JSON.parse(localStorage.getItem("user"));
+        console.log(user);
         navigate('/')
         console.log(res)
       }).catch((err)=>{

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 
 export default function VideoUpload() {
@@ -20,6 +20,11 @@ export default function VideoUpload() {
     checks: "",
     more: ""
   });
+
+  useEffect(()=>{
+
+  },[])
+
 
   // General input change
   const handleChange = (e) => {
@@ -64,12 +69,21 @@ export default function VideoUpload() {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
     console.log("FINAL DATA TO SEND TO BACKEND:", videoData);
     alert("Video published (check console)!");
+    await axios.post('http://localhost:3000/api/video',videoData,{withCredentials:true}).then((res)=>{
+      console.log(res)
+    }).catch((err)=>{
+      console.log(err.message)
+    })
+
   };
     console.log(videoData)
+
+
+
   return (
     <div className="min-h-screen bg-[#f9f9f9] p-6">
   <form

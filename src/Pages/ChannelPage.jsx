@@ -19,6 +19,7 @@ function ChannelPage({ sideBar }) {
 
       // Store only videos array
       setChannelVideos(response.data.video);
+      console.log(response.data)
     } catch (err) {
       console.log(err.message);
     }

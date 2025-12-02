@@ -12,10 +12,11 @@ function NavBar({ sideBarFn, sideBar }) {
   const [openMenu, setOpenMenu] = useState(false);
   const [createMenu, setCreateMenu] = useState(false);
   const navigate = useNavigate();
-
+  const user = JSON.parse(localStorage.getItem("user"));
+console.log(user);
   // Load user on navbar mount
   useEffect(() => {
-    const pic = localStorage.getItem("userProfilePic");
+    const pic = user?.profilePic;
     if (pic) {
       setUserPic(pic);
       setIsLoggedIn(true); 
@@ -33,8 +34,8 @@ function NavBar({ sideBarFn, sideBar }) {
         { withCredentials: true }
       );
 
-      localStorage.removeItem("userProfilePic");
-      localStorage.removeItem("userId");
+      
+      localStorage.removeItem("user");
       localStorage.removeItem("token");
 
       setIsLoggedIn(false);
@@ -47,13 +48,14 @@ function NavBar({ sideBarFn, sideBar }) {
     }
   };
 
-//   fetch("http://localhost:3000/auth/logout", {
-//   method: "POST",
-//   credentials: "include"
-// })
-// .then(r => { console.log("fetch response", r.status); return r.text(); })
-// .then(t => console.log("body:", t))
-// .catch(e => console.error("fetch error:", e));
+fetch("http://localhost:3000/auth/logout", {
+  method: "POST",
+  credentials: "include"
+})
+.then(r => { console.log("fetch response", r.status); return r.text(); })
+.then(t => console.log("body:", t))
+.catch(e => console.error("fetch error:", e));
+
 
 
   return (
@@ -113,7 +115,7 @@ function NavBar({ sideBarFn, sideBar }) {
                   className="w-full flex justify-center gap-1 px-4 py-2 hover:bg-gray-100"
                   onClick={() => {
                     setCreateMenu(false);
-                    navigate("/122/upload");
+                    navigate(`/${localStorage.getItem("user")._id}/upload`);
                   }}
                 >
                   Upload Video <FaVideo />
@@ -123,7 +125,7 @@ function NavBar({ sideBarFn, sideBar }) {
                   className="w-full flex justify-center gap-1 px-4 py-2 hover:bg-gray-100"
                   onClick={() => {
                     setCreateMenu(false);
-                    navigate(`/user/${localStorage.getItem("userId")}`);
+                    navigate(`/user/${localStorage.getItem("user")._id}`);
                   }}
                 >
                   Go To Channel
