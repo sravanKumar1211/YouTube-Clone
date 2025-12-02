@@ -13,7 +13,7 @@ function NavBar({ sideBarFn, sideBar }) {
   const [createMenu, setCreateMenu] = useState(false);
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("user"));
-console.log(user);
+  //console.log(user);
   // Load user on navbar mount
   useEffect(() => {
     const pic = user?.profilePic;
@@ -115,7 +115,7 @@ fetch("http://localhost:3000/auth/logout", {
                   className="w-full flex justify-center gap-1 px-4 py-2 hover:bg-gray-100"
                   onClick={() => {
                     setCreateMenu(false);
-                    navigate(`/${localStorage.getItem("user")._id}/upload`);
+                    navigate(`/${user?._id}/upload`);
                   }}
                 >
                   Upload Video <FaVideo />
@@ -125,7 +125,7 @@ fetch("http://localhost:3000/auth/logout", {
                   className="w-full flex justify-center gap-1 px-4 py-2 hover:bg-gray-100"
                   onClick={() => {
                     setCreateMenu(false);
-                    navigate(`/user/${localStorage.getItem("user")._id}`);
+                    navigate(`/user/${user?._id}`);
                   }}
                 >
                   Go To Channel
