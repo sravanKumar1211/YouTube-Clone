@@ -18,7 +18,7 @@ function HomePage({ sideBar }) {
   .catch(err => console.log(err));
 }, []);
 
-
+console.log(data)
 
 
   const categories = [
@@ -83,14 +83,13 @@ function HomePage({ sideBar }) {
                 </Link>
 
                 {/* Video Info */}
-                <Link to={"/user/12"}>
+                 <Link to={`/user/${item?.user?._id}`}>
                   <div className="flex gap-3 mt-3">
                     <img
                       src={item.user.profilePic}
                       alt="Channel Icon"
                       className="w-10 h-10 rounded-full"
                     />
-
                     <div className="flex flex-col">
                       <h3 className="text-sm font-semibold leading-tight">
                         {item.title}

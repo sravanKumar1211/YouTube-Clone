@@ -32,6 +32,7 @@ const userData = JSON.parse(localStorage.getItem("user"));
 
   // Extract channel info from first video
   const channelInfo = channelVideos[0]?.user;
+  console.log(channelInfo)
 
   return (
     <>
@@ -46,7 +47,7 @@ const userData = JSON.parse(localStorage.getItem("user"));
           {/* CHANNEL BANNER */}
           <div className="w-full h-48 bg-gray-300 rounded-xl overflow-hidden">
             <img
-              src={userData?.channelBanner}
+              src={(channelInfo?.channelBanner)?(channelInfo?.channelBanner): userData?.channelBanner}
               className="w-full h-full object-cover"
               alt="Channel Banner"
             />
@@ -57,7 +58,7 @@ const userData = JSON.parse(localStorage.getItem("user"));
 
             {/* CHANNEL ICON */}
             <img
-              src={userData?.profilePic}
+              src={(channelInfo?.profilePic)?(channelInfo?.profilePic):userData?.profilePic}
               className="w-28 h-28 rounded-full object-cover border"
               alt="Channel Icon"
             />
@@ -65,15 +66,15 @@ const userData = JSON.parse(localStorage.getItem("user"));
             {/* NAME + STATS */}
             <div className="flex flex-col">
               <h1 className="text-3xl font-bold">
-                {userData?.channelName}
+                {(channelInfo?.channelName)?(channelInfo?.channelName):userData?.channelName}
               </h1>
 
               <p className="text-gray-600 text-sm mt-1">
-                @{userData?.userDataName} • {channelVideos.length} videos
+                @{(channelInfo?.userName)?(channelInfo?.userName): userData?.userName} • {channelVideos.length} videos
               </p>
 
               <p className="mt-2 text-sm text-gray-700 max-w-2xl">
-                {userData?.about}
+                {(channelInfo?.about)?(channelInfo?.about):userData?.about}
               </p>
 
               {/* BUTTONS */}

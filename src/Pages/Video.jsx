@@ -60,7 +60,7 @@ function Video() {
       );
 
       setSuggestedVideos(response.data.video);
-      console.log(response?.data?.video)
+      //console.log(response?.data?.video)
 
     } catch (err) {
       console.log(err.message);
