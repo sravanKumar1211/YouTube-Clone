@@ -2,14 +2,16 @@ import React, { useEffect, useState } from "react";
 import { AiOutlineLike } from "react-icons/ai";
 import { BiDislike } from "react-icons/bi";
 import { Link, useParams } from "react-router-dom";
+import { toast,ToastContainer } from "react-toastify";
 import axios from "axios";
 
 function Video() {
 
   const { id } = useParams();
-
+  const CurrentUser = JSON.parse(localStorage.getItem("user"));
   const [videoData, setVideoData] = useState({});
   const [comments, setComments] = useState([]);
+  const [message, setMessage] = useState('');
   const [SuggestedVideos, setSuggestedVideos] = useState([]);
   const [userId, setUserId] = useState(null);
   const [likes, setLikes] = useState(videoData?.likesCount || 0);
@@ -34,6 +36,8 @@ function Video() {
     }
   };
 
+
+ 
   // ===================== FETCH COMMENTS =====================
   const commentsByVideoId = async () => {
     try {
@@ -73,6 +77,58 @@ function Video() {
       fetchSuggestedVideos();
     }
   }, [userId, id]);
+
+
+
+
+// const handleComment = async () => {
+//   if (!message.trim()) return;
+
+//   try {
+//     const body = { message, video: id };
+
+//     const response = await axios.post(
+//       "http://localhost:3000/commentapi/comment",
+//       body,
+//       { withCredentials: true }
+//     );
+
+//     setComments(prev => [response.data.comment, ...prev]);
+
+//     setMessage("");
+//   } catch (err) {
+//     toast.error("Something went wrong");
+//     console.log(err);
+//   }
+// };
+
+const token = localStorage.getItem("token");
+
+const handleComment = async () => {
+  if (!message.trim()) return;
+
+  try {
+    const response = await axios.post(
+      "http://localhost:3000/commentapi/comment",
+      { message, video: id },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    setComments(prev => [response.data.comment, ...prev]);
+    setMessage("");
+     window.location.reload()
+
+  } catch (err) {
+    console.log(err);
+    toast.error("Something went wrong");
+  }
+};
+
+
 
   return (
     <>
@@ -123,39 +179,39 @@ function Video() {
              {/* LIKE / DISLIKE BUTTONS */}
             <div className="flex items-center gap-3 mt-4">
 
-  {/* LIKE BUTTON */}
-  <button
-    onClick={() => {
-      if (!likes) {
-        setLikes(1);
-        if (dislikes) setDislikes(0);  // remove dislike if active
-      } else {
-        setLikes(0);  // remove like on second click
-      }
-    }}
-    className={`flex items-center gap-1 px-4 py-2 rounded-full 
-      ${likes ? "bg-black text-white" : "bg-gray-200 hover:bg-gray-500"}`}
-  >
-    <AiOutlineLike className="text-lg" /> {likes}
-  </button>
+            {/* LIKE BUTTON */}
+            <button
+              onClick={() => {
+                if (!likes) {
+                  setLikes(1);
+                  if (dislikes) setDislikes(0);  // remove dislike if active
+                } else {
+                  setLikes(0);  // remove like on second click
+                }
+              }}
+              className={`flex items-center gap-1 px-4 py-2 rounded-full 
+                ${likes ? "bg-black text-white" : "bg-gray-200 hover:bg-gray-500"}`}
+            >
+              <AiOutlineLike className="text-lg" /> {likes}
+            </button>
 
-  {/* DISLIKE BUTTON */}
-  <button
-    onClick={() => {
-      if (!dislikes) {
-        setDislikes(1);
-        if (likes) setLikes(0);  // remove like if active
-      } else {
-        setDislikes(0); // remove dislike on second click
-      }
-    }}
-    className={`flex items-center gap-1 px-4 py-2 rounded-full 
-      ${dislikes ? "bg-black text-white" : "bg-gray-200 hover:bg-gray-500"}`}
-  >
-    <BiDislike className="text-lg" /> {dislikes}
-  </button>
+            {/* DISLIKE BUTTON */}
+            <button
+              onClick={() => {
+                if (!dislikes) {
+                  setDislikes(1);
+                  if (likes) setLikes(0);  // remove like if active
+                } else {
+                  setDislikes(0); // remove dislike on second click
+                }
+              }}
+              className={`flex items-center gap-1 px-4 py-2 rounded-full 
+                ${dislikes ? "bg-black text-white" : "bg-gray-200 hover:bg-gray-500"}`}
+            >
+              <BiDislike className="text-lg" /> {dislikes}
+            </button>
 
-</div>
+          </div>
 
 
           </div>   {/* ✅ FIXED: Properly closed the parent div */}
@@ -181,23 +237,32 @@ function Video() {
 
             <div className="flex gap-3">
               <img
-                src="https://cdn.fliki.ai/image/page/660ba680adaa44a37532fd97/6663112070e1cfda27f86585.jpg"
+                src={CurrentUser.profilePic}
                 className="w-10 h-10 rounded-full"
                 alt="user"
               />
 
               <div className="flex-1">
+                {/* <input
+                  type="text"
+                  placeholder="Add a comment..." value={message} onChange={(e)=>{setComments(e.target.value)}}
+                  className="w-full border-b border-gray-300 focus:border-black outline-none py-1"
+                /> */}
+
                 <input
                   type="text"
                   placeholder="Add a comment..."
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
                   className="w-full border-b border-gray-300 focus:border-black outline-none py-1"
                 />
+
 
                 <div className="flex justify-end gap-2 mt-2">
                   <button className="px-3 py-1 rounded-full hover:bg-gray-200">
                     Cancel
                   </button>
-                  <button className="px-4 py-1 rounded-full bg-black text-white hover:bg-gray-800">
+                  <button className="px-4 py-1 rounded-full bg-black text-white hover:bg-gray-800" onClick={handleComment}>
                     Comment
                   </button>
                 </div>
@@ -266,7 +331,7 @@ function Video() {
           ))}
 
         </div>
-
+          <ToastContainer></ToastContainer>
       </div>
     </>
   );
