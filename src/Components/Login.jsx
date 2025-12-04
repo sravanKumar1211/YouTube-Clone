@@ -77,9 +77,10 @@ console.log(loginField)
         localStorage.setItem("token",res.data.token)
         localStorage.setItem("user", JSON.stringify(res.data.user));
         const user = JSON.parse(localStorage.getItem("user"));
-        console.log(user);
-        navigate('/')
-        console.log(res)
+        //console.log(user);
+         navigate('/')
+         window.location.reload()
+       // console.log(res)
       }).catch((err)=>{
         toast.error("Invalid Credentials")
         console.log(err.message)

@@ -32,7 +32,7 @@ const userData = JSON.parse(localStorage.getItem("user"));
 
   // Extract channel info from first video
   const channelInfo = channelVideos[0]?.user;
-  console.log(channelInfo)
+  //console.log(channelInfo)
 
   return (
     <>

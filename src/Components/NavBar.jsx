@@ -20,6 +20,7 @@ function NavBar({ sideBarFn, sideBar }) {
     if (pic) {
       setUserPic(pic);
       setIsLoggedIn(true); 
+       
     }
   }, []);
 
@@ -41,8 +42,8 @@ function NavBar({ sideBarFn, sideBar }) {
       setIsLoggedIn(false);
       setUserPic(null);
       setOpenMenu(false);
-
       navigate("/");
+       window.location.reload()
     } catch (err) {
       console.log("Logout Error:", err.message);
     }

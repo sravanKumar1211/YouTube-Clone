@@ -101,7 +101,7 @@ const handleSubmit = () => {
         {/* GOOGLE ICON + TITLE */}
         <div className="text-center">
           <img src={googleLogo} className="w-10 mx-auto" />
-          <h2 className="text-xl font-semibold mt-2">Create your YouTube account</h2>
+          <h2 className="text-xl font-semibold mt-2">Create your ProTube account</h2>
           <p className="text-gray-600 text-sm">A single account for all services</p>
         </div>
 

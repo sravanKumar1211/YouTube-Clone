@@ -18,7 +18,7 @@ function HomePage({ sideBar }) {
   .catch(err => console.log(err));
 }, []);
 
-console.log(data)
+//console.log(data)
 
 
   const categories = [
