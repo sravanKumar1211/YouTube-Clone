@@ -1,47 +1,76 @@
 import React, { useEffect, useState } from "react";
 import { AiOutlineLike } from "react-icons/ai";
 import { BiDislike } from "react-icons/bi";
-import { Link } from "react-router-dom";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import axios from "axios";
 
-
 function Video() {
-  const SuggestedVideos = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-  const [videoData,setVideoData]=useState({})
-  const[comments,SetComments]=useState([])
 
+  const { id } = useParams();
 
- const { id } = useParams();
-  console.log(id)
+  const [videoData, setVideoData] = useState({});
+  const [comments, setComments] = useState([]);
+  const [SuggestedVideos, setSuggestedVideos] = useState([]);
+  const [userId, setUserId] = useState(null);
 
-     const fetchVideoById = async () => {
+  // ===================== FETCH MAIN VIDEO =====================
+  const fetchVideoById = async () => {
     try {
-      const response = await axios.get(`http://localhost:3000/api/getvideobyid/${id}`);
-      setVideoData(response.data.video);
-      //console.log(videoData)
+      const response = await axios.get(
+        `http://localhost:3000/api/getvideobyid/${id}`
+      );
+
+      const video = response.data.video;
+      setVideoData(video);
+
+      // extract channel id
+      const uid = video?.user?._id;
+      setUserId(uid);
 
     } catch (err) {
       console.log(err.message);
     }
   };
 
-   const commentsByVideoId = async () => {
+  // ===================== FETCH COMMENTS =====================
+  const commentsByVideoId = async () => {
     try {
-      const response = await axios.get(`http://localhost:3000/commentapi/comment/${id}`);
-      SetComments(response.data.comments);
-      console.log(response.data)
-
+      const response = await axios.get(
+        `http://localhost:3000/commentapi/comment/${id}`
+      );
+      setComments(response.data.comments);
     } catch (err) {
       console.log(err.message);
     }
   };
 
+  // Run when the video id changes
   useEffect(() => {
     fetchVideoById();
-    commentsByVideoId()
+    commentsByVideoId();
   }, [id]);
 
+  // ===================== FETCH SUGGESTED VIDEOS =====================
+  const fetchSuggestedVideos = async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:3000/channelapi/channelvideos/${userId}`
+      );
+
+      setSuggestedVideos(response.data.video);
+      console.log(response?.data?.video)
+
+    } catch (err) {
+      console.log(err.message);
+    }
+  };
+
+  // Run when userId is available
+  useEffect(() => {
+    if (userId) {
+      fetchSuggestedVideos();
+    }
+  }, [userId,id]);
 
   return (
     <>
@@ -51,13 +80,12 @@ function Video() {
         <div className="max-w-[900px] w-full flex flex-col">
 
           {/* VIDEO PLAYER */}
-              {videoData?.videoUrl && (
-          <video controls autoPlay className="w-full h-auto rounded-xl shadow-md">
-            <source src={videoData?.videoUrl} type="video/mp4" />
-          </video>
+          {videoData?.videoUrl && (
+            <video controls autoPlay className="w-full h-auto rounded-xl shadow-md">
+              <source src={videoData.videoUrl} type="video/mp4" />
+            </video>
           )}
-           
-         
+
           {/* TITLE */}
           <h2 className="text-xl font-semibold mt-4">
             {videoData?.title}
@@ -68,13 +96,14 @@ function Video() {
 
             {/* LEFT SIDE — CHANNEL INFO */}
             <div className="flex gap-3 items-start">
-                <Link to={`/user/${videoData?.user?._id}`}>
-              <img
-                src={videoData?.user?.profilePic}
-                alt="channel logo"
-                className="w-12 h-12 rounded-full object-cover"
-              />
-                </Link>
+              <Link to={`/user/${videoData?.user?._id}`}>
+                <img
+                  src={videoData?.user?.profilePic}
+                  alt="channel logo"
+                  className="w-12 h-12 rounded-full object-cover"
+                />
+              </Link>
+
               <div className="flex flex-col">
                 <h3 className="font-semibold text-gray-900 text-md">
                   {videoData?.user?.channelName}
@@ -96,19 +125,21 @@ function Video() {
               </button>
 
               <button className="flex items-center gap-1 bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-full">
-                <BiDislike className="text-lg" />{videoData?.dislikesCount}
+                <BiDislike className="text-lg" /> {videoData?.dislikesCount}
               </button>
             </div>
           </div>
 
           {/* ---------------- DESCRIPTION BOX ---------------- */}
           <div className="bg-gray-100 rounded-xl p-4 mt-5 text-sm">
-            <p className="font-medium">100,000 views · {videoData?.user?.createdAt.slice(0,10)}</p>
+            <p className="font-medium">
+              100,000 views · {videoData?.createdAt?.slice(0, 10)}
+            </p>
 
             <p className="mt-3 text-gray-800 leading-relaxed">
-             {videoData?.description}
-             <br></br>
-             {videoData?.tags}
+              {videoData?.description}
+              <br />
+              {videoData?.tags}
             </p>
           </div>
 
@@ -127,7 +158,6 @@ function Video() {
                 <input
                   type="text"
                   placeholder="Add a comment..."
-                  value={comments} onChange={(e)=>{SetComments(e.target.value)}}
                   className="w-full border-b border-gray-300 focus:border-black outline-none py-1"
                 />
 
@@ -144,64 +174,68 @@ function Video() {
           </div>
 
           {/* ---------------- OLD COMMENTS ---------------- */}
-          {
-            comments?.map((item,index)=>{
-              return(
-                     <div className="mt-6 space-y-5" key={index}>
+          <div className="mt-6 space-y-5">
+            {comments?.map((item, index) => (
+              <div className="flex gap-3" key={index}>
+                <img
+                  src={item?.user?.profilePic}
+                  className="w-10 h-10 rounded-full"
+                  alt="user"
+                />
 
-            <div className="flex gap-3">
-              <img
-                src={item?.user?.profilePic}
-                className="w-10 h-10 rounded-full"
-                alt="user"
-              />
+                <div>
+                  <p className="text-sm">
+                    <span className="font-semibold mr-2">
+                      {item?.user?.userName}
+                    </span>
+                    {item?.message}
+                  </p>
 
-              <div>
-                <p className="text-sm">
-                  <span className="font-semibold mr-2">{item?.user?.userName}</span>
-                  {item?.message}
-                </p>
-
-                <div className="flex gap-2 text-gray-600 mt-1">
-                  <AiOutlineLike /> <BiDislike />
+                  <div className="flex gap-2 text-gray-600 mt-1">
+                    <AiOutlineLike /> <BiDislike />
+                  </div>
                 </div>
               </div>
-            </div>
-
+            ))}
           </div>
-       
-              );
-            })
-          }
-         
-           </div>
+
+        </div>
+
         {/* ---------------- RIGHT SIDE — SUGGESTED VIDEOS ---------------- */}
         <div className="max-w-[400px] w-full h-[88vh] overflow-y-auto pr-2">
 
           {SuggestedVideos.map((item, ind) => (
-            <div key={ind} className="flex gap-3 mb-4 cursor-pointer">
+            <Link to={`/watch/${item._id}`} key={ind}>
+              <div className="flex gap-3 mb-4 cursor-pointer">
 
-              {/* Thumbnail */}
-              <div className="w-44 h-28 rounded-lg overflow-hidden">
-                <img
-                src="https://cdn.fliki.ai/image/page/660ba680adaa44a37532fd97/6663112070e1cfda27f86585.jpg"
-                  className="w-full h-full object-cover"
-                />
-              </div>
+                {/* Thumbnail */}
+                <div className="w-44 h-28 rounded-lg overflow-hidden">
+                  <img
+                    src={item.thumbnailUrl}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
 
-              {/* Info */}
-              <div className="flex flex-col text-sm">
-                <h3 className="font-semibold leading-tight">
-                  Suggested Video {item}
-                </h3>
-                <p className="text-xs text-gray-600">Channel Name</p>
-                <p className="text-xs text-gray-600">100 views · 10 days ago</p>
+                {/* Info */}
+                <div className="flex flex-col text-sm">
+                  <h3 className="font-semibold leading-tight">
+                    {item.title}
+                  </h3>
+                  <p className="text-xs text-gray-600">
+                    {item?.user?.channelName}
+                  </p>
+                  <p className="text-xs text-gray-600">
+                    100 views · 10 days ago
+                  </p>
+                </div>
+
               </div>
-            </div>
+            </Link>
           ))}
 
         </div>
-          </div>
+
+      </div>
     </>
   );
 }
