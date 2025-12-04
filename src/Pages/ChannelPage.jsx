@@ -4,7 +4,7 @@ import { Link, useParams } from "react-router-dom";
 import axios from "axios";
 
 function ChannelPage({ sideBar }) {
-const user = JSON.parse(localStorage.getItem("user"));
+const userData = JSON.parse(localStorage.getItem("user"));
   const { id } = useParams();
 
   // API returns: { success: true, video: [ ... ] }
@@ -46,7 +46,7 @@ const user = JSON.parse(localStorage.getItem("user"));
           {/* CHANNEL BANNER */}
           <div className="w-full h-48 bg-gray-300 rounded-xl overflow-hidden">
             <img
-              src={user?.channelBanner}
+              src={userData?.channelBanner}
               className="w-full h-full object-cover"
               alt="Channel Banner"
             />
@@ -57,7 +57,7 @@ const user = JSON.parse(localStorage.getItem("user"));
 
             {/* CHANNEL ICON */}
             <img
-              src={user?.profilePic}
+              src={userData?.profilePic}
               className="w-28 h-28 rounded-full object-cover border"
               alt="Channel Icon"
             />
@@ -65,15 +65,15 @@ const user = JSON.parse(localStorage.getItem("user"));
             {/* NAME + STATS */}
             <div className="flex flex-col">
               <h1 className="text-3xl font-bold">
-                {user?.channelName}
+                {userData?.channelName}
               </h1>
 
               <p className="text-gray-600 text-sm mt-1">
-                @{user?.userName} • {channelVideos.length} videos
+                @{userData?.userDataName} • {channelVideos.length} videos
               </p>
 
               <p className="mt-2 text-sm text-gray-700 max-w-2xl">
-                {user?.about}
+                {userData?.about}
               </p>
 
               {/* BUTTONS */}
@@ -123,7 +123,7 @@ const user = JSON.parse(localStorage.getItem("user"));
                   <div className="mt-3 text-sm">
                     <h3 className="font-semibold leading-tight">{item.title}</h3>
                     <p className="text-gray-600 text-xs mt-1">
-                      {item.user?.channelName}
+                      {item.userData?.channelName}
                     </p>
                     <p className="text-gray-600 text-xs">
                       {item.likesCount} likes • {item.createdAt.slice(0, 10)}
