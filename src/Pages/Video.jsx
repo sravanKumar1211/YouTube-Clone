@@ -12,6 +12,8 @@ function Video() {
   const [comments, setComments] = useState([]);
   const [SuggestedVideos, setSuggestedVideos] = useState([]);
   const [userId, setUserId] = useState(null);
+  const [likes, setLikes] = useState(videoData?.likesCount || 0);
+  const [dislikes, setDislikes] = useState(videoData?.dislikesCount || 0);
 
   // ===================== FETCH MAIN VIDEO =====================
   const fetchVideoById = async () => {
@@ -70,7 +72,7 @@ function Video() {
     if (userId) {
       fetchSuggestedVideos();
     }
-  }, [userId,id]);
+  }, [userId, id]);
 
   return (
     <>
@@ -118,17 +120,47 @@ function Video() {
               </button>
             </div>
 
-            {/* RIGHT SIDE — LIKE / DISLIKE */}
-            <div className="flex items-center gap-3">
-              <button className="flex items-center gap-1 bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-full">
-                <AiOutlineLike className="text-lg" /> {videoData?.likesCount}
-              </button>
+             {/* LIKE / DISLIKE BUTTONS */}
+            <div className="flex items-center gap-3 mt-4">
 
-              <button className="flex items-center gap-1 bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-full">
-                <BiDislike className="text-lg" /> {videoData?.dislikesCount}
-              </button>
-            </div>
-          </div>
+  {/* LIKE BUTTON */}
+  <button
+    onClick={() => {
+      if (!likes) {
+        setLikes(1);
+        if (dislikes) setDislikes(0);  // remove dislike if active
+      } else {
+        setLikes(0);  // remove like on second click
+      }
+    }}
+    className={`flex items-center gap-1 px-4 py-2 rounded-full 
+      ${likes ? "bg-black text-white" : "bg-gray-200 hover:bg-gray-500"}`}
+  >
+    <AiOutlineLike className="text-lg" /> {likes}
+  </button>
+
+  {/* DISLIKE BUTTON */}
+  <button
+    onClick={() => {
+      if (!dislikes) {
+        setDislikes(1);
+        if (likes) setLikes(0);  // remove like if active
+      } else {
+        setDislikes(0); // remove dislike on second click
+      }
+    }}
+    className={`flex items-center gap-1 px-4 py-2 rounded-full 
+      ${dislikes ? "bg-black text-white" : "bg-gray-200 hover:bg-gray-500"}`}
+  >
+    <BiDislike className="text-lg" /> {dislikes}
+  </button>
+
+</div>
+
+
+          </div>   {/* ✅ FIXED: Properly closed the parent div */}
+
+         
 
           {/* ---------------- DESCRIPTION BOX ---------------- */}
           <div className="bg-gray-100 rounded-xl p-4 mt-5 text-sm">
