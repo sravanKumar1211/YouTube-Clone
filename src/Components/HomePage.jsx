@@ -1,4 +1,3 @@
-
 import axios from "axios";
 import React, {
   useEffect,
@@ -7,16 +6,15 @@ import React, {
   lazy,
   Suspense
 } from "react";
-import { Link } from "react-router-dom";
 
-// Lazy load the VideoCard (optimization)
 const VideoCard = lazy(() => import("./VideoCard"));
 
 function HomePage({ sideBar, search }) {
   const [data, setData] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("All");
   const token = localStorage.getItem("token");
 
-  // Fetch videos — runs once
+  // Fetch videos
   useEffect(() => {
     const token = localStorage.getItem("token");
 
@@ -24,26 +22,13 @@ function HomePage({ sideBar, search }) {
       .get("http://localhost:3000/api/allvideo", {
         headers: {
           Authorization: `Bearer ${token}`,
-        },
+        }
       })
-      .then((res) => setData(res.data.videos))
-      .catch((err) => console.log(err));
+      .then(res => setData(res.data.videos))
+      .catch(err => console.log(err));
   }, []);
 
-  // Memoized filtering (prevents recomputation)
-  const videosToShow = useMemo(() => {
-    if (!search) return data;
-
-    const term = search.toLowerCase();
-
-    return data.filter((item) => {
-      const title = item.title.toLowerCase();
-      const category = item.category?.toLowerCase();
-      return title.includes(term) || category?.includes(term);
-    });
-  }, [data, search]);
-
-  // Categories memoized
+  // Categories list (unchanged)
   const categories = useMemo(
     () => [
       "All",
@@ -53,24 +38,59 @@ function HomePage({ sideBar, search }) {
       "Gaming",
       "Tollywood",
       "Bollywood",
+      "Moves",
       "Music",
-      "Web Development",
-      "DSA",
-      "AI & ML",
-      "Stocks",
-      "Podcasts",
-      "Movies",
-      "History",
-      "Fitness",
-      "Technology",
-      "Trending",
-      "Live",
+      "Entertainment"
     ],
     []
   );
 
+  // ⭐ Convert tags into usable array
+  const parseTags = (item) => {
+    if (!item.tags || !item.tags[0]) return [];
+
+    return item.tags[0]
+      .split("#")                // split by '#'
+      .map(t => t.trim())        // remove spaces
+      .filter(t => t.length > 0) // remove empty
+      .map(t => t.toLowerCase()); // normalize
+  };
+
+  // ⭐ Final Filtering (category + search + tags)
+  const videosToShow = useMemo(() => {
+    const term = search.toLowerCase();
+
+    return data.filter(item => {
+      const title = item.title?.toLowerCase() || "";
+      const category = item.category?.toLowerCase() || "";
+
+      // ⭐ convert tags
+      const tagList = parseTags(item); // ["tollywood", "bollywood", "moves", ...]
+
+      // ------------------------
+      // SEARCH FILTER
+      // ------------------------
+      const matchesSearch =
+        !search ||
+        title.includes(term) ||
+        category.includes(term) ||
+        tagList.some(t => t.includes(term));
+
+      // ------------------------
+      // CATEGORY FILTER
+      // ------------------------
+      const matchesCategory =
+        selectedCategory === "All" ||
+        category === selectedCategory.toLowerCase() ||
+        tagList.includes(selectedCategory.toLowerCase());
+
+      return matchesSearch && matchesCategory;
+    });
+  }, [data, search, selectedCategory]);
+
   return (
     <div className="w-full min-h-screen bg-white mt-[-40px]">
+      
       {/* CATEGORY BAR */}
       <div className="sticky top-12 bg-white z-20 py-3">
         <div
@@ -82,7 +102,13 @@ function HomePage({ sideBar, search }) {
           {categories.map((cat, i) => (
             <button
               key={i}
-              className="px-4 py-2 bg-gray-100 rounded-xl whitespace-nowrap hover:bg-gray-200"
+              onClick={() => setSelectedCategory(cat)}
+              className={`px-4 py-2 rounded-xl whitespace-nowrap 
+                ${
+                  selectedCategory === cat
+                    ? "bg-black text-white"
+                    : "bg-gray-100 hover:bg-gray-200"
+                }`}
             >
               {cat}
             </button>
@@ -104,7 +130,7 @@ function HomePage({ sideBar, search }) {
             style={{
               gridTemplateColumns: sideBar
                 ? "repeat(3, minmax(0, 1fr))"
-                : "repeat(4, minmax(0, 1fr))",
+                : "repeat(4, minmax(0, 1fr))"
             }}
           >
             {videosToShow?.map((item, i) => (
