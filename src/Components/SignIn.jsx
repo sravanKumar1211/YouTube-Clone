@@ -1,17 +1,16 @@
-import React, { useState } from "react";
+import React from "react";
 import axios from "axios";
 import googleLogo from "../assets/google.png";
-import {toast,ToastContainer} from 'react-toastify'
+import { toast, ToastContainer } from "react-toastify";
 import { Link, useNavigate } from "react-router-dom";
-
-
+import "react-toastify/dist/ReactToastify.css";
 
 function SignIn() {
   const CLOUD_NAME = "dzdurdxzw";
   const UPLOAD_PRESET = "youtube-clone";
-  const navigate=useNavigate()
+  const navigate = useNavigate();
 
-  const [user, setUser] = useState({
+  const [user, setUser] = React.useState({
     fullName: "",
     userName: "",
     email: "",
@@ -19,16 +18,16 @@ function SignIn() {
     profilePic: "",
   });
 
-  const [channel, setChannel] = useState({
+  const [channel, setChannel] = React.useState({
     channelName: "",
     about: "",
     channelBanner: "",
   });
 
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = React.useState({});
 
-  // Upload to Cloudinary
-  const uploadFile = async (file, updateState, fieldName) => {
+  // Upload file to Cloudinary
+  const uploadFile = async (file, updateState, field) => {
     if (!file) return;
 
     const form = new FormData();
@@ -40,9 +39,9 @@ function SignIn() {
         `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/upload`,
         form
       );
-      updateState((prev) => ({ ...prev, [fieldName]: res.data.secure_url }));
-    } catch (error) {
-      console.log("Upload Error:", error);
+      updateState((prev) => ({ ...prev, [field]: res.data.secure_url }));
+    } catch (err) {
+      console.log("Upload error:", err);
     }
   };
 
@@ -51,79 +50,84 @@ function SignIn() {
     let e = {};
     let ok = true;
 
-    if (!user.fullName.trim()) (e.fullName = "Required", ok = false);
-    if (!user.userName.trim()) (e.userName = "Required", ok = false);
+    if (!user.fullName.trim()) (e.fullName = "Required", (ok = false));
+    if (!user.userName.trim()) (e.userName = "Required", (ok = false));
 
     if (!/^\S+@\S+\.\S+$/.test(user.email)) {
       (e.email = "Invalid email"), (ok = false);
     }
 
-    const passCheck = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/;
-    if (!passCheck.test(user.password)) {
+    if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/.test(user.password)) {
       e.password = "Weak password";
       ok = false;
     }
 
-    if (!channel.channelName.trim()) (e.channelName = "Required", ok = false);
-    if (!channel.about.trim()) (e.about = "Required", ok = false);
+    if (!channel.channelName.trim()) (e.channelName = "Required", (ok = false));
+    if (!channel.about.trim()) (e.about = "Required", (ok = false));
 
     setErrors(e);
     return ok;
   };
-const handleSubmit = () => {
-  if (!validate()) {
-    toast.error("Fix form errors before submitting");
-    return;
-  }
 
-  const finalData = { ...user, ...channel };
+  const handleSubmit = () => {
+    if (!validate()) {
+      toast.error("Fix errors before submitting");
+      return;
+    }
 
-  axios.post("http://localhost:3000/auth/signup", finalData)
-    .then(res => {
-      toast.success("Account created successfully!");
-      console.log(res.data);
-       navigate('/')
-    })
-    .catch(err => {
-      const msg = err?.response?.data?.message || "Signup failed";
-      toast.error(msg);
-      console.log(err);
-    });
-};
+    const final = { ...user, ...channel };
 
+    axios
+      .post("http://localhost:3000/auth/signup", final)
+      .then(() => {
+        toast.success("Account created successfully!");
+        navigate("/");
+      })
+      .catch((err) => {
+        toast.error(err?.response?.data?.message || "Signup failed");
+      });
+  };
 
   return (
     <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center p-4 z-50">
 
       {/* CARD */}
-      <div className="bg-white rounded-xl w-full max-w-3xl shadow-xl p-8">
+      <div className="bg-white rounded-xl w-full max-w-3xl shadow-xl p-6 sm:p-8">
 
-        {/* GOOGLE ICON + TITLE */}
+        {/* GOOGLE LOGO + HEADING */}
         <div className="text-center">
           <img src={googleLogo} className="w-10 mx-auto" />
-          <h2 className="text-xl font-semibold mt-2">Create your ProTube account</h2>
-          <p className="text-gray-600 text-sm">A single account for all services</p>
+          <h2 className="text-lg sm:text-xl font-semibold mt-2">
+            Create your ProTube account
+          </h2>
+          <p className="text-gray-600 text-xs sm:text-sm">
+            A single account for all services
+          </p>
         </div>
 
-        {/* FORM GRID */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
+        {/* FORM GRID (RESPONSIVE) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 mt-8">
 
-          {/* USER DETAILS */}
+          {/* USER INFO */}
           <div>
-            <h3 className="font-medium mb-3">User Info</h3>
+            <h3 className="font-medium mb-3 text-sm sm:text-base">User Info</h3>
 
             <div className="space-y-4">
               <Input
                 placeholder="Full Name"
                 value={user.fullName}
-                onChange={(e) => setUser({ ...user, fullName: e.target.value })}
+                onChange={(e) =>
+                  setUser({ ...user, fullName: e.target.value })
+                }
                 error={errors.fullName}
               />
 
               <Input
                 placeholder="Username"
                 value={user.userName}
-                onChange={(e) => setUser({ ...user, userName: e.target.value })}
+                onChange={(e) =>
+                  setUser({ ...user, userName: e.target.value })
+                }
                 error={errors.userName}
               />
 
@@ -139,15 +143,17 @@ const handleSubmit = () => {
                 type="password"
                 placeholder="Password"
                 value={user.password}
-                onChange={(e) => setUser({ ...user, password: e.target.value })}
+                onChange={(e) =>
+                  setUser({ ...user, password: e.target.value })
+                }
                 error={errors.password}
               />
             </div>
           </div>
 
-          {/* CHANNEL DETAILS */}
+          {/* CHANNEL INFO */}
           <div>
-            <h3 className="font-medium mb-3">Channel Info</h3>
+            <h3 className="font-medium mb-3 text-sm sm:text-base">Channel Info</h3>
 
             <div className="space-y-4">
               <Input
@@ -167,43 +173,54 @@ const handleSubmit = () => {
                 }
                 className="w-full border rounded-lg px-3 py-2 h-24 text-sm"
               ></textarea>
-              {errors.about && <p className="text-red-500 text-xs">{errors.about}</p>}
+              {errors.about && (
+                <p className="text-red-500 text-xs">{errors.about}</p>
+              )}
             </div>
           </div>
         </div>
 
-        {/* IMAGE UPLOAD SECTION */}
+        {/* IMAGE UPLOADS (RESPONSIVE GRID) */}
         <div className="mt-10">
-          <h3 className="font-medium mb-4">Profile & Banner</h3>
+          <h3 className="font-medium mb-4 text-sm sm:text-base">
+            Profile & Banner
+          </h3>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 items-center">
 
-            {/* Profile Preview */}
+            {/* PROFILE PIC */}
             <div>
-              <p className="text-sm font-medium">Profile Picture</p>
+              <p className="text-xs sm:text-sm font-medium">Profile Picture</p>
+
               <img
                 src={user.profilePic || "https://via.placeholder.com/100"}
                 className="w-20 h-20 rounded-full object-cover mt-2 border"
               />
+
               <input
                 type="file"
-                className="mt-2 text-sm"
+                className="mt-2 text-xs sm:text-sm"
                 onChange={(e) =>
                   uploadFile(e.target.files[0], setUser, "profilePic")
                 }
               />
             </div>
 
-            {/* Banner Preview */}
+            {/* CHANNEL BANNER */}
             <div>
-              <p className="text-sm font-medium">Channel Banner</p>
+              <p className="text-xs sm:text-sm font-medium">Channel Banner</p>
+
               <img
-                src={channel.channelBanner || "https://via.placeholder.com/300x100"}
-                className="w-full h-20 object-cover rounded-lg mt-2 border"
+                src={
+                  channel.channelBanner ||
+                  "https://via.placeholder.com/300x100"
+                }
+                className="w-full h-20 sm:h-24 object-cover rounded-lg mt-2 border"
               />
+
               <input
                 type="file"
-                className="mt-2 text-sm"
+                className="mt-2 text-xs sm:text-sm"
                 onChange={(e) =>
                   uploadFile(e.target.files[0], setChannel, "channelBanner")
                 }
@@ -213,25 +230,30 @@ const handleSubmit = () => {
           </div>
         </div>
 
-        {/* FOOTER */}
-        <div className="flex justify-between items-center mt-10">
-          <Link to={'/login'}>
+        {/* FOOTER BUTTONS */}
+        <div className="flex flex-col sm:flex-row justify-between items-center mt-10 gap-4 sm:gap-0">
+
+          <Link to={"/login"}>
+            <button className="text-blue-600 text-sm hover:underline">
+              Already have an account?
+            </button>
+          </Link>
+
           <button
-            className="text-blue-600 text-sm"
-          >
-            Already have an account?
-          </button>
-                </Link>
-          <button
-            className="bg-blue-600 text-white px-6 py-2 rounded-lg text-sm hover:bg-blue-700"
+            className="
+              bg-blue-600 text-white 
+              px-5 sm:px-6 py-2 rounded-lg 
+              text-sm sm:text-base 
+              hover:bg-blue-700 w-full sm:w-auto
+            "
             onClick={handleSubmit}
           >
             Create account
           </button>
         </div>
-
       </div>
-      <ToastContainer></ToastContainer>
+
+      <ToastContainer />
     </div>
   );
 }
@@ -252,4 +274,3 @@ function Input({ error, ...props }) {
 }
 
 export default SignIn;
-

@@ -1,6 +1,4 @@
 
-
-
 import React, {
   useState,
   useEffect,
@@ -33,9 +31,7 @@ function VideoUpload() {
     more: "",
   });
 
-  // ==========================
-  // 📌 LOAD VIDEO FOR EDIT MODE
-  // ==========================
+  // LOAD VIDEO FOR EDIT MODE
   useEffect(() => {
     if (!videoId) return;
 
@@ -70,9 +66,7 @@ function VideoUpload() {
     loadVideo();
   }, [videoId]);
 
-  // ==========================
-  // 📌 MEMOIZED INPUT HANDLER
-  // ==========================
+  // INPUT HANDLER
   const handleChange = useCallback((e) => {
     const { name, value, type, checked } = e.target;
 
@@ -82,9 +76,7 @@ function VideoUpload() {
     }));
   }, []);
 
-  // ==========================
-  // 📌 MEMOIZED CLOUDINARY UPLOAD
-  // ==========================
+  // CLOUDINARY UPLOAD
   const uploadToCloudinary = useCallback(async (file, type) => {
     const form = new FormData();
     form.append("file", file);
@@ -99,9 +91,7 @@ function VideoUpload() {
     return res.data.secure_url;
   }, []);
 
-  // ==========================
-  // 📌 FILE UPLOAD (Stable)
-  // ==========================
+  // FILE UPLOAD HANDLER
   const handleFileUpload = useCallback(
     async (e, fieldType) => {
       const file = e.target.files?.[0];
@@ -120,9 +110,7 @@ function VideoUpload() {
     [uploadToCloudinary]
   );
 
-  // ==========================
-  // 📌 FORM SUBMIT (MEMOIZED)
-  // ==========================
+  // SUBMIT
   const handleSubmit = useCallback(
     async (e) => {
       e.preventDefault();
@@ -166,9 +154,6 @@ function VideoUpload() {
     [videoData, videoId, navigate]
   );
 
-  // ==========================
-  // 📌 MEMOIZED STATIC SELECT OPTIONS
-  // ==========================
   const categoryOptions = useMemo(
     () => ["Education", "Entertainment", "Music", "Blog"],
     []
@@ -180,48 +165,82 @@ function VideoUpload() {
   );
 
   return (
-    <div className="min-h-screen bg-[#f9f9f9] p-6">
+    <div className="min-h-screen bg-[#f9f9f9] p-4 sm:p-6">
+
       <form
         onSubmit={handleSubmit}
-        className="max-w-6xl mx-auto bg-white rounded-xl shadow border border-gray-200"
+        className="
+          max-w-6xl mx-auto bg-white rounded-xl shadow 
+          border border-gray-200 
+          w-full
+        "
       >
         {/* HEADER */}
-        <div className="flex items-center justify-between px-6 py-4 border-b">
-          <h2 className="text-xl font-semibold text-gray-800">
-            Upload/Edit videos
+        <div className="
+          flex flex-col sm:flex-row 
+          items-start sm:items-center 
+          justify-between 
+          px-4 sm:px-6 
+          py-4 
+          gap-3 sm:gap-0 
+          border-b
+        ">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-800">
+            Upload / Edit Video
           </h2>
 
-          <div className="flex gap-3">
+          <div className="flex gap-2 sm:gap-3">
             <button
               type="button"
-              className="px-4 py-2 rounded-full border border-gray-300 text-sm hover:bg-gray-100"
+              className="
+                px-4 py-2 
+                rounded-full 
+                border border-gray-300 
+                text-sm 
+                hover:bg-gray-100
+              "
             >
               Cancel
             </button>
 
             <button
               type="submit"
-              className="px-5 py-2 rounded-full bg-blue-600 text-white text-sm font-medium hover:bg-blue-700"
+              className="
+                px-5 py-2 
+                rounded-full 
+                bg-blue-600 
+                text-white text-sm 
+                font-medium 
+                hover:bg-blue-700
+              "
             >
               Publish
             </button>
           </div>
         </div>
 
-        {/* ==============================
-            🔥 Main Form Body
-        =============================== */}
-        <div className="grid grid-cols-12 gap-8 px-6 py-6">
-          {/* LEFT AREA */}
+        {/* MAIN BODY */}
+        <div className="grid grid-cols-12 gap-6 px-4 sm:px-6 py-6">
+
+          {/* LEFT COLUMN */}
           <div className="col-span-12 lg:col-span-8 space-y-8">
+
             {/* VIDEO UPLOAD */}
-            <div className="border rounded-xl p-5 bg-gray-50 shadow-sm">
+            <div className="border rounded-xl p-4 sm:p-5 bg-gray-50 shadow-sm">
               <label className="block text-sm font-medium text-gray-700 mb-3">
                 Video file
               </label>
 
-              <div className="flex flex-col md:flex-row gap-6">
-                <div className="w-full md:w-[420px] h-[240px] bg-black rounded-xl overflow-hidden flex items-center justify-center text-gray-300">
+              <div className="flex flex-col md:flex-row gap-4 sm:gap-6">
+
+                <div className="
+                  w-full md:w-[420px] 
+                  h-[180px] sm:h-[220px] md:h-[240px]
+                  bg-black 
+                  rounded-xl overflow-hidden 
+                  flex items-center justify-center 
+                  text-gray-300 text-xs
+                ">
                   {videoData.videoUrl ? (
                     <video
                       src={videoData.videoUrl}
@@ -229,16 +248,23 @@ function VideoUpload() {
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <span className="text-xs">Video preview</span>
+                    "Video preview"
                   )}
                 </div>
 
                 <div className="flex-1">
-                  <p className="text-sm text-gray-600 mb-3">
+                  <p className="text-xs sm:text-sm text-gray-600 mb-3">
                     Upload MP4 videos.
                   </p>
 
-                  <label className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-full cursor-pointer text-sm shadow-sm hover:bg-gray-100">
+                  <label className="
+                    inline-flex items-center gap-2 
+                    px-4 py-2 
+                    bg-white border border-gray-300 
+                    rounded-full cursor-pointer 
+                    text-sm shadow-sm 
+                    hover:bg-gray-100
+                  ">
                     <input
                       type="file"
                       className="sr-only"
@@ -248,6 +274,7 @@ function VideoUpload() {
                     <span>Upload video</span>
                   </label>
                 </div>
+
               </div>
             </div>
 
@@ -278,8 +305,13 @@ function VideoUpload() {
             <div>
               <label className="block text-sm font-medium">Thumbnail</label>
 
-              <div className="flex items-start gap-4">
-                <div className="w-40 h-24 bg-gray-100 border rounded-lg overflow-hidden text-xs flex items-center justify-center">
+              <div className="flex flex-col sm:flex-row items-start gap-4">
+                <div className="
+                  w-32 h-20 sm:w-40 sm:h-24 
+                  bg-gray-100 border 
+                  rounded-lg overflow-hidden 
+                  text-xs flex items-center justify-center
+                ">
                   {videoData.thumbnailUrl ? (
                     <img
                       src={videoData.thumbnailUrl}
@@ -290,7 +322,13 @@ function VideoUpload() {
                   )}
                 </div>
 
-                <label className="inline-flex items-center px-4 py-2 bg-white border rounded-full cursor-pointer text-sm shadow-sm hover:bg-gray-100">
+                <label className="
+                  inline-flex items-center 
+                  px-4 py-2 
+                  bg-white border rounded-full 
+                  cursor-pointer text-sm shadow-sm 
+                  hover:bg-gray-100
+                ">
                   <input
                     type="file"
                     className="sr-only"
@@ -315,10 +353,10 @@ function VideoUpload() {
             </div>
 
             {/* AUDIENCE */}
-            <div className="bg-gray-50 border rounded-xl p-4 shadow-sm">
+            <div className="bg-gray-50 border rounded-xl p-4 sm:p-5 shadow-sm">
               <p className="text-sm font-medium">Audience</p>
 
-              <div className="flex gap-6 mt-2">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-6 mt-2">
                 <label className="flex items-center gap-2 text-sm">
                   <input
                     type="radio"
@@ -346,12 +384,14 @@ function VideoUpload() {
             </div>
           </div>
 
-          {/* ===========================
-             RIGHT PANEL
-          ============================ */}
-          <div className="col-span-12 lg:col-span-4 space-y-6">
+          {/* RIGHT PANEL */}
+          <div className="
+            col-span-12 lg:col-span-4 
+            space-y-6 
+            order-first lg:order-none
+          ">
             {/* VISIBILITY */}
-            <div className="bg-white border rounded-xl p-5 shadow-sm">
+            <div className="bg-white border rounded-xl p-4 sm:p-5 shadow-sm">
               <p className="text-sm font-medium mb-3">Visibility</p>
 
               <div className="space-y-3">
@@ -394,7 +434,7 @@ function VideoUpload() {
             </div>
 
             {/* LICENSE */}
-            <div className="bg-white border rounded-xl p-5 shadow-sm">
+            <div className="bg-white border rounded-xl p-4 sm:p-5 shadow-sm">
               <label className="block text-sm font-medium mb-2">License</label>
               <select
                 name="license"
@@ -412,7 +452,7 @@ function VideoUpload() {
             </div>
 
             {/* MONETIZATION */}
-            <div className="bg-white border rounded-xl p-5 shadow-sm">
+            <div className="bg-white border rounded-xl p-4 sm:p-5 shadow-sm">
               <label className="flex items-center gap-3 cursor-pointer">
                 <input
                   type="checkbox"
@@ -426,7 +466,7 @@ function VideoUpload() {
             </div>
 
             {/* CATEGORY */}
-            <div className="bg-white border rounded-xl p-5 shadow-sm">
+            <div className="bg-white border rounded-xl p-4 sm:p-5 shadow-sm">
               <label className="block text-sm font-medium mb-2">Category</label>
               <select
                 name="category"
@@ -443,8 +483,8 @@ function VideoUpload() {
               </select>
             </div>
 
-            {/* DATE */}
-            <div className="bg-white border rounded-xl p-5 shadow-sm">
+            {/* RECORDING DATE */}
+            <div className="bg-white border rounded-xl p-4 sm:p-5 shadow-sm">
               <label className="block text-sm font-medium mb-2">
                 Recording Date
               </label>
@@ -458,7 +498,7 @@ function VideoUpload() {
             </div>
 
             {/* MORE OPTIONS */}
-            <div className="bg-white border rounded-xl p-5 shadow-sm">
+            <div className="bg-white border rounded-xl p-4 sm:p-5 shadow-sm">
               <label className="block text-sm font-medium mb-2">
                 More Options
               </label>
@@ -470,6 +510,7 @@ function VideoUpload() {
               />
             </div>
           </div>
+
         </div>
       </form>
     </div>

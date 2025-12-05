@@ -1,8 +1,6 @@
-
 import React, { useEffect, useState, useCallback, lazy, Suspense } from "react";
 import logo from "../assets/youtube.png";
 
-// Lazy-loaded icons (performance boost)
 const IoMenu = lazy(() => import("react-icons/io5").then(m => ({ default: m.IoMenu })));
 const IoSearchSharp = lazy(() => import("react-icons/io5").then(m => ({ default: m.IoSearchSharp })));
 const FaVideo = lazy(() => import("react-icons/fa").then(m => ({ default: m.FaVideo })));
@@ -20,18 +18,15 @@ function NavBar({ sideBarFn, sideBar, search, setSearch }) {
   const [openMenu, setOpenMenu] = useState(false);
   const [createMenu, setCreateMenu] = useState(false);
   const navigate = useNavigate();
-  
+
   const user = JSON.parse(localStorage.getItem("user"));
 
-  // Load user pic once on mount
   useEffect(() => {
     if (user?.profilePic) {
       setUserPic(user.profilePic);
       setIsLoggedIn(true);
     }
   }, []);
-
-  // ===== HANDLERS (Memoized) =====
 
   const toggleCreateMenu = useCallback(() => {
     setCreateMenu(prev => !prev);
@@ -65,12 +60,12 @@ function NavBar({ sideBarFn, sideBar, search, setSearch }) {
 
   return (
     <>
-      <div className="flex items-center justify-between px-4 py-2 bg-white fixed top-0 left-0 right-0 z-50 shadow-md">
-        
+      <div className="flex items-center justify-between px-3 sm:px-4 py-2 bg-white fixed top-0 left-0 right-0 z-50 shadow-md">
+
         {/* LEFT */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 sm:gap-4">
           <button
-            className="text-2xl p-1 hover:bg-gray-200 rounded-full"
+            className="text-xl sm:text-2xl p-1 hover:bg-gray-200 rounded-full"
             onClick={() => sideBarFn(!sideBar)}
           >
             <Suspense><IoMenu /></Suspense>
@@ -78,47 +73,48 @@ function NavBar({ sideBarFn, sideBar, search, setSearch }) {
 
           <Link to={"/"}>
             <div className="flex items-center gap-1 cursor-pointer">
-              <img src={logo} alt="Logo" className="h-6" />
-              <span className="text-lg">ProTube</span>
+              <img src={logo} alt="Logo" className="h-5 sm:h-6" />
+              <span className="text-base sm:text-lg font-medium">ProTube</span>
             </div>
           </Link>
         </div>
 
         {/* SEARCH BAR */}
-        <div className="flex items-center w-[45%] max-md:w-[60%]">
+        <div className="flex items-center w-[40%] sm:w-[45%] max-md:w-[60%] max-sm:w-[55%]">
+
           <div className="flex items-center w-full border border-gray-300 rounded-full overflow-hidden">
             <input
               type="text"
               placeholder="Search"
-              className="w-full px-4 py-1 outline-none text-sm"
+              className="w-full px-3 py-1 sm:py-2 text-xs sm:text-sm outline-none"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
 
-            <button className="bg-gray-100 px-4 border-l border-gray-300 hover:bg-gray-200">
-              <Suspense><IoSearchSharp className="text-xl" /></Suspense>
+            <button className="bg-gray-100 px-3 sm:px-4 border-l border-gray-300 hover:bg-gray-200">
+              <Suspense><IoSearchSharp className="text-lg sm:text-xl" /></Suspense>
             </button>
           </div>
 
-          <button className="ml-3 text-lg bg-gray-100 p-2 rounded-full hover:bg-gray-200">
+          <button className="ml-2 sm:ml-3 text-base sm:text-lg bg-gray-100 p-2 rounded-full hover:bg-gray-200">
             <Suspense><FaMicrophone /></Suspense>
           </button>
         </div>
 
-        {/* RIGHT */}
-        <div className="flex items-center gap-5 text-xl">
+        {/* RIGHT SECTION */}
+        <div className="flex items-center gap-3 sm:gap-5 text-xl">
 
-          {/* CREATE */}
+          {/* CREATE BUTTON */}
           <div className="relative">
             <button
-              className="flex items-center gap-2 text-sm bg-gray-100 px-3 py-1 rounded-full hover:bg-gray-200"
+              className="hidden sm:flex items-center gap-2 text-xs sm:text-sm bg-gray-100 px-2 sm:px-3 py-1 rounded-full hover:bg-gray-200"
               onClick={toggleCreateMenu}
             >
               <Suspense><FaPlus /></Suspense> Create
             </button>
 
             {createMenu && (
-              <div className="absolute right-0 mt-2 w-40 bg-white shadow-lg border rounded-md py-2 text-sm">
+              <div className="absolute right-0 mt-2 w-36 sm:w-40 bg-white shadow-lg border rounded-md py-2 text-sm">
                 <button
                   className="w-full flex justify-center gap-1 px-4 py-2 hover:bg-gray-100"
                   onClick={() => {
@@ -130,7 +126,7 @@ function NavBar({ sideBarFn, sideBar, search, setSearch }) {
                 </button>
 
                 <button
-                  className="w-full flex justify-center gap-1 px-4 py-2 hover:bg-gray-100"
+                  className="w-full flex justify-center px-4 py-2 hover:bg-gray-100"
                   onClick={() => {
                     setCreateMenu(false);
                     navigate(`/user/${user?._id}`);
@@ -143,9 +139,9 @@ function NavBar({ sideBarFn, sideBar, search, setSearch }) {
           </div>
 
           {/* NOTIFICATION */}
-          <button className="relative p-2 rounded-full hover:bg-gray-200">
-            <Suspense><FaBell /></Suspense>
-            <span className="absolute top-0 right-0 bg-red-600 text-white text-xs px-1 rounded-full">
+          <button className="relative p-1 sm:p-2 rounded-full hover:bg-gray-200">
+            <Suspense><FaBell className="text-lg sm:text-xl" /></Suspense>
+            <span className="absolute top-0 right-0 bg-red-600 text-white text-[9px] sm:text-xs px-1 rounded-full">
               9+
             </span>
           </button>
@@ -157,15 +153,15 @@ function NavBar({ sideBarFn, sideBar, search, setSearch }) {
                 <img
                   src={userPic}
                   alt="Profile"
-                  className="h-8 w-8 rounded-full object-cover"
+                  className="h-7 w-7 sm:h-8 sm:w-8 rounded-full object-cover"
                 />
               ) : (
-                <Suspense><CgProfile className="text-2xl" /></Suspense>
+                <Suspense><CgProfile className="text-xl sm:text-2xl" /></Suspense>
               )}
             </button>
 
             {openMenu && (
-              <div className="absolute right-0 mt-2 w-36 bg-white shadow-lg border rounded-md py-2 text-sm">
+              <div className="absolute right-0 mt-2 w-28 sm:w-36 bg-white shadow-lg border rounded-md py-2 text-xs sm:text-sm">
                 {!isLoggedIn ? (
                   <>
                     <Link to={"/login"}>

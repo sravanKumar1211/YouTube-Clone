@@ -1,3 +1,4 @@
+
 import React, {
   useEffect,
   useState,
@@ -11,7 +12,7 @@ import { Link, useParams } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import axios from "axios";
 
-// Lazy load icons (performance boost)
+// Lazy load icons
 const AiOutlineLike = lazy(() =>
   import("react-icons/ai").then((m) => ({ default: m.AiOutlineLike }))
 );
@@ -19,7 +20,6 @@ const BiDislike = lazy(() =>
   import("react-icons/bi").then((m) => ({ default: m.BiDislike }))
 );
 
-// Lazy-loaded child components
 const CommentCard = lazy(() => import("./VideoCommentCard"));
 const SuggestedCard = lazy(() => import("./VideoSuggestedCard"));
 
@@ -94,7 +94,7 @@ function Video() {
     if (userId) fetchSuggestedVideos();
   }, [userId, fetchSuggestedVideos]);
 
-  // ===================== COMMENT HANDLERS =====================
+  // =============== COMMENT HANDLERS ===============
   const handleComment = useCallback(async () => {
     if (!message.trim()) return;
 
@@ -109,7 +109,6 @@ function Video() {
 
       setComments((prev) => [response.data.comment, ...prev]);
       setMessage("");
-      window.location.reload();
     } catch (err) {
       toast.error("Something went wrong");
     }
@@ -133,7 +132,6 @@ function Video() {
         setEditingCommentId(null);
         setEditMessage("");
         setShowMenu(null);
-        window.location.reload();
       } catch (err) {
         toast.error("Failed to update comment");
       }
@@ -153,58 +151,65 @@ function Video() {
       setComments((prev) => prev.filter((c) => c._id !== deleteTargetId));
       setShowDeleteConfirm(false);
       setDeleteTargetId(null);
-     // window.location.reload();
     } catch (err) {
       toast.error("Failed to delete comment");
     }
   }, [deleteTargetId, token]);
 
-  // ===================== Memoize Lists =====================
   const memoComments = useMemo(() => comments, [comments]);
   const memoSuggested = useMemo(() => SuggestedVideos, [SuggestedVideos]);
 
   return (
     <>
-      <div className="flex justify-center gap-6 pt-6 pb-10 px-4">
+      <div className="flex flex-col lg:flex-row justify-center gap-6 pt-6 pb-10 px-4">
+
         {/* LEFT SECTION */}
-        <div className="max-w-[900px] w-full flex flex-col">
+        <div className="w-full lg:max-w-[900px] flex flex-col">
+
+          {/* VIDEO PLAYER */}
           {videoData?.videoUrl && (
             <video
               controls
               autoPlay
-              className="w-full h-auto rounded-xl shadow-md"
+              className="w-full rounded-xl shadow-md max-h-[60vh] object-cover"
             >
               <source src={videoData.videoUrl} type="video/mp4" />
             </video>
           )}
 
-          <h2 className="text-xl font-semibold mt-4">{videoData?.title}</h2>
+          {/* TITLE */}
+          <h2 className="text-lg sm:text-xl font-semibold mt-4">
+            {videoData?.title}
+          </h2>
 
           {/* CHANNEL + LIKE SECTION */}
-          <div className="flex justify-between items-start mt-4">
-            {/* LEFT: CHANNEL INFO */}
+          <div className="flex flex-col sm:flex-row justify-between sm:items-center mt-4 gap-4">
+
+            {/* CHANNEL */}
             <div className="flex gap-3 items-start">
               <Link to={`/user/${videoData?.user?._id}`}>
                 <img
                   src={videoData?.user?.profilePic}
-                  className="w-12 h-12 rounded-full object-cover"
+                  className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover"
                 />
               </Link>
 
-              <div className="flex flex-col">
-                <h3 className="font-semibold text-gray-900 text-md">
+              <div>
+                <h3 className="font-semibold text-gray-900 text-sm sm:text-md">
                   {videoData?.user?.channelName}
                 </h3>
-                <p className="text-gray-500 text-sm">100K subscribers</p>
+                <p className="text-gray-500 text-xs sm:text-sm">
+                  100K subscribers
+                </p>
               </div>
 
-              <button className="ml-4 px-4 py-2 bg-black text-white text-sm rounded-full hover:bg-gray-800">
+              <button className="ml-0 sm:ml-4 px-4 py-2 bg-black text-white text-sm rounded-full hover:bg-gray-800">
                 Subscribe
               </button>
             </div>
 
-            {/* LIKE/DISLIKE */}
-            <div className="flex items-center gap-3 mt-4">
+            {/* LIKE / DISLIKE */}
+            <div className="flex items-center gap-3">
               <button
                 onClick={() => {
                   if (!likes) {
@@ -212,14 +217,12 @@ function Video() {
                     if (dislikes) setDislikes(0);
                   } else setLikes(0);
                 }}
-                className={`flex items-center gap-1 px-4 py-2 rounded-full ${
-                  likes
-                    ? "bg-black text-white"
-                    : "bg-gray-200 hover:bg-gray-500"
+                className={`flex items-center gap-1 px-3 sm:px-4 py-2 rounded-full text-sm sm:text-md ${
+                  likes ? "bg-black text-white" : "bg-gray-200 hover:bg-gray-300"
                 }`}
               >
                 <Suspense>
-                  <AiOutlineLike className="text-lg" /> {likes}
+                  <AiOutlineLike className="text-base sm:text-lg" /> {likes}
                 </Suspense>
               </button>
 
@@ -230,14 +233,14 @@ function Video() {
                     if (likes) setLikes(0);
                   } else setDislikes(0);
                 }}
-                className={`flex items-center gap-1 px-4 py-2 rounded-full ${
+                className={`flex items-center gap-1 px-3 sm:px-4 py-2 rounded-full text-sm sm:text-md ${
                   dislikes
                     ? "bg-black text-white"
-                    : "bg-gray-200 hover:bg-gray-500"
+                    : "bg-gray-200 hover:bg-gray-300"
                 }`}
               >
                 <Suspense>
-                  <BiDislike className="text-lg" /> {dislikes}
+                  <BiDislike className="text-base sm:text-lg" /> {dislikes}
                 </Suspense>
               </button>
             </div>
@@ -249,7 +252,7 @@ function Video() {
               100,000 views · {videoData?.createdAt?.slice(0, 10)}
             </p>
 
-            <p className="mt-3 text-gray-800 leading-relaxed">
+            <p className="mt-3 text-gray-800 leading-relaxed text-xs sm:text-sm">
               {videoData?.description}
               <br />
               {videoData?.tags}
@@ -263,7 +266,7 @@ function Video() {
             <div className="flex gap-3">
               <img
                 src={CurrentUser.profilePic}
-                className="w-10 h-10 rounded-full"
+                className="w-8 h-8 sm:w-10 sm:h-10 rounded-full"
               />
 
               <div className="flex-1">
@@ -272,7 +275,7 @@ function Video() {
                   placeholder="Add a comment..."
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
-                  className="w-full border-b border-gray-300 focus:border-black outline-none py-1"
+                  className="w-full border-b border-gray-300 focus:border-black outline-none py-1 text-sm"
                 />
 
                 <div className="flex justify-end gap-2 mt-2">
@@ -290,7 +293,7 @@ function Video() {
             </div>
           </div>
 
-          {/* COMMENT LIST (Lazy Loaded) */}
+          {/* COMMENT LIST */}
           <div className="mt-6 space-y-6">
             {memoComments.map((item) => (
               <Suspense
@@ -313,8 +316,9 @@ function Video() {
               </Suspense>
             ))}
 
+            {/* Delete Modal */}
             {showDeleteConfirm && (
-              <div className="absolute right-[50%] top-[60%] z-50">
+              <div className="fixed inset-0 flex justify-center items-center bg-black/40 z-50 px-4">
                 <div className="bg-white shadow-xl rounded-lg p-4 w-64 border border-gray-200">
                   <h3 className="text-md font-semibold mb-2">
                     Delete Comment?
@@ -345,8 +349,8 @@ function Video() {
           </div>
         </div>
 
-        {/* SUGGESTED VIDEOS RIGHT SIDE */}
-        <div className="max-w-[400px] w-full h-[88vh] overflow-y-auto pr-2">
+        {/* RIGHT SIDE – SUGGESTED VIDEOS */}
+        <div className="w-full lg:max-w-[400px] lg:h-[88vh] overflow-y-auto pr-0 lg:pr-2 mt-10 lg:mt-0">
           {memoSuggested.map((item, ind) => (
             <Suspense
               key={ind}

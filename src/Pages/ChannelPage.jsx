@@ -16,9 +16,7 @@ function ChannelPage({ sideBar }) {
   const [channelVideos, setChannelVideos] = useState([]);
   const [menuOpen, setMenuOpen] = useState(null);
 
-  // ============================
-  // 📌 FETCH CHANNEL VIDEOS (Memoized)
-  // ============================
+  // FETCH CHANNEL VIDEOS
   const fetchChannelData = useCallback(async () => {
     try {
       const response = await axios.get(
@@ -34,21 +32,13 @@ function ChannelPage({ sideBar }) {
     fetchChannelData();
   }, [fetchChannelData]);
 
-  // ============================
-  // 📌 DELETE HANDLER (Memoized)
-  // ============================
+  // DELETE HANDLER
   const handleDelete = useCallback(
     async (videoId) => {
-      console.log("❗ DELETE CLICKED for video ID:", videoId);
-
       const token = localStorage.getItem("token");
-      console.log("TOKEN FOUND:", token);
-
-      // Removed confirm since it was blocking UI
-      console.log("⚠️ Confirm disabled — executing delete");
 
       try {
-        const res = await axios.delete(
+        await axios.delete(
           `http://localhost:3000/channelapi/deletevideo/${videoId}`,
           {
             headers: { Authorization: `Bearer ${token}` },
@@ -56,21 +46,16 @@ function ChannelPage({ sideBar }) {
           }
         );
 
-        console.log("✅ DELETE RESPONSE RECEIVED:", res.data);
-
         setChannelVideos((prev) => prev.filter((v) => v._id !== videoId));
         alert("Video deleted successfully!");
       } catch (error) {
-        console.log("❌ DELETE ERROR:", error);
         alert("Failed to delete video");
       }
     },
     []
   );
 
-  // ============================
-  // 📌 Memoized Channel Info (prevents re-renders)
-  // ============================
+  // Memoized channel info
   const channelInfo = useMemo(
     () => channelVideos[0]?.user,
     [channelVideos]
@@ -79,15 +64,18 @@ function ChannelPage({ sideBar }) {
   return (
     <>
       <div className="flex w-full">
+
         <SideBar sideBar={sideBar} />
 
         <div
-          className={`flex-1 px-6 pb-10 ${
-            sideBar ? "ml-60" : "ml-5"
-          } pt-20`}
+          className={`
+            flex-1 px-4 sm:px-6 pb-10 
+            pt-20 transition-all 
+            ${sideBar ? "ml-56 sm:ml-60" : "ml-4 sm:ml-5"}
+          `}
         >
           {/* CHANNEL BANNER */}
-          <div className="w-full h-48 bg-gray-300 rounded-xl overflow-hidden">
+          <div className="w-full h-32 sm:h-40 md:h-48 bg-gray-300 rounded-xl overflow-hidden">
             <img
               src={channelInfo?.channelBanner || userData?.channelBanner}
               className="w-full h-full object-cover"
@@ -96,32 +84,33 @@ function ChannelPage({ sideBar }) {
           </div>
 
           {/* CHANNEL HEADER */}
-          <div className="flex mt-6 items-start gap-4">
+          <div className="flex flex-col md:flex-row mt-6 items-start md:items-center gap-6">
+
             <img
               src={channelInfo?.profilePic || userData?.profilePic}
-              className="w-28 h-28 rounded-full object-cover border"
+              className="w-20 h-20 sm:w-28 sm:h-28 rounded-full object-cover border"
               alt="Channel Icon"
             />
 
             <div className="flex flex-col">
-              <h1 className="text-3xl font-bold">
+              <h1 className="text-2xl sm:text-3xl font-bold">
                 {channelInfo?.channelName || userData?.channelName}
               </h1>
 
-              <p className="text-gray-600 text-sm mt-1">
+              <p className="text-gray-600 text-xs sm:text-sm mt-1">
                 @{channelInfo?.userName || userData?.userName} •{" "}
                 {channelVideos.length} videos
               </p>
 
-              <p className="mt-2 text-sm text-gray-700 max-w-2xl">
+              <p className="mt-2 text-sm sm:text-base text-gray-700 max-w-xl">
                 {channelInfo?.about || userData?.about}
               </p>
 
-              <div className="flex gap-3 mt-3">
-                <button className="px-4 py-2 rounded-full bg-black text-white hover:bg-gray-800 text-sm">
+              <div className="flex gap-2 sm:gap-3 mt-4">
+                <button className="px-4 py-2 rounded-full bg-black text-white hover:bg-gray-800 text-xs sm:text-sm">
                   Subscribe
                 </button>
-                <button className="px-4 py-2 rounded-full bg-gray-200 hover:bg-gray-300 text-sm">
+                <button className="px-4 py-2 rounded-full bg-gray-200 hover:bg-gray-300 text-xs sm:text-sm">
                   Join
                 </button>
               </div>
@@ -129,7 +118,7 @@ function ChannelPage({ sideBar }) {
           </div>
 
           {/* VIDEO GRID */}
-          <div className="grid mt-8 gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
+          <div className="grid mt-10 gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
             {channelVideos.map((item, index) => (
               <VideoCard
                 key={item._id}
@@ -149,13 +138,14 @@ function ChannelPage({ sideBar }) {
 }
 
 // ============================
-// 📌 Memoized Video Card Component
+// 📌 Responsive Video Card Component
 // ============================
 const VideoCard = React.memo(
   ({ item, index, menuOpen, setMenuOpen, userData, handleDelete }) => {
     return (
       <div className="cursor-pointer flex flex-col relative">
-        {/* SHOW MENU ONLY FOR OWNER */}
+
+        {/* MENU BUTTON (Only for owner) */}
         {userData?._id === item?.user?._id && (
           <>
             <button
@@ -200,18 +190,18 @@ const VideoCard = React.memo(
               className="w-full h-full object-cover"
               alt="Video Thumbnail"
             />
-            <span className="absolute right-1 bottom-1 bg-black text-white text-xs px-1 rounded">
+            <span className="absolute right-1 bottom-1 bg-black text-white text-[10px] sm:text-xs px-1 rounded">
               12:45
             </span>
           </div>
         </Link>
 
-        <div className="mt-3 text-sm">
-          <h3 className="font-semibold">{item.title}</h3>
-          <p className="text-gray-600 text-xs mt-1">
+        <div className="mt-3 text-xs sm:text-sm">
+          <h3 className="font-semibold line-clamp-2">{item.title}</h3>
+          <p className="text-gray-600 mt-1">
             {item.user?.channelName}
           </p>
-          <p className="text-gray-600 text-xs">
+          <p className="text-gray-600">
             {item.likesCount} likes • {item.createdAt.slice(0, 10)}
           </p>
         </div>

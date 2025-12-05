@@ -21,18 +21,25 @@ import music from "../assets/youtube-music-icon.png";
 import kids from "../assets/youtube-kids.png";
 import { Link } from "react-router-dom";
 
-function SideBar({sideBar}) {
+function SideBar({ sideBar }) {
   return (
     <>
-        {/* used turnary operator and changed tailwind classes to hidden when sideBar val is false */}
-      <div className={sideBar?"w-60 fixed top-[56px] left-0 h-[calc(100vh-56px)] z-50 bg-white overflow-y-auto px-2 py-3 text-sm font-roboto select-none":"hidden"}>
+      <div
+        className={`
+          ${sideBar ? "translate-x-0" : "-translate-x-full"}
+          w-56 sm:w-60 fixed top-[56px] left-0 h-[calc(100vh-56px)] 
+          z-50 bg-white overflow-y-auto px-2 py-3 text-sm font-roboto select-none 
+          transition-transform duration-300 ease-in-out
+          shadow-md sm:shadow-none
+        `}
+      >
 
         {/* SECTION 1 */}
         <ul className="space-y-1">
-          <Link to={'/'}>
-          <li className="flex items-center gap-4 px-3 py-2 rounded-lg hover:bg-gray-100 cursor-pointer">
-            <MdHome className="text-xl" /> Home
-          </li>
+          <Link to={"/"}>
+            <li className="flex items-center gap-4 px-3 py-2 rounded-lg hover:bg-gray-100 cursor-pointer">
+              <MdHome className="text-xl" /> Home
+            </li>
           </Link>
 
           <li className="flex items-center gap-4 px-3 py-2 rounded-lg hover:bg-gray-100 cursor-pointer">
@@ -100,12 +107,12 @@ function SideBar({sideBar}) {
 
         <hr className="my-3" />
 
-        {/* Section 4: More from YouTube */}
+        {/* SECTION 4 */}
         <ul className="space-y-2">
           <li className="px-3 py-2 font-semibold text-gray-700">More from ProTube</li>
 
           <li className="flex items-center gap-4 px-3 py-1 rounded-lg hover:bg-gray-100 cursor-pointer">
-            <img src={logo} alt="logo" className="h-5" /> ProTube Premium
+            <img src={logo} className="h-5" /> ProTube Premium
           </li>
 
           <li className="flex items-center gap-4 px-2 py-1 rounded-lg hover:bg-gray-100 cursor-pointer">
@@ -123,7 +130,7 @@ function SideBar({sideBar}) {
 
         <hr className="my-3" />
 
-        {/* Section 5: Settings */}
+        {/* SECTION 5 */}
         <ul className="space-y-1">
           <li className="flex items-center gap-4 px-3 py-2 rounded-lg hover:bg-gray-100 cursor-pointer">
             <IoSettingsOutline className="text-xl" /> Settings
@@ -144,10 +151,10 @@ function SideBar({sideBar}) {
 
         <hr className="my-3" />
 
-        {/* Footer Text */}
-        <div className="px-3 text-xs text-gray-600 space-y-2">
+        {/* FOOTER */}
+        <div className="px-3 text-xs text-gray-600 space-y-2 pb-8">
           <p>About Press Copyright Contact us Creators Advertise Developers</p>
-          <p>Terms Privacy Policy & Safety How YouTube worksTest new features</p>
+          <p>Terms Privacy Policy & Safety How YouTube works Test new features</p>
           <p>© 2025 Sravan LLC</p>
         </div>
       </div>

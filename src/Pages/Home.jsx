@@ -3,16 +3,27 @@ import SideBar from '../Components/SideBar'
 import HomePage from '../Components/HomePage'
 
 function Home({ sideBar, search }) {
-  
   return (
     <>
-   
-    <div className='flex w-\[100\%\] pt-10 pr-12 pb-0 pl-12 box-border'>
-       {/* sideBar state value holds boolian val so that side bar can be desplayed or hidden */}
-        <SideBar sideBar={sideBar}></SideBar>
-        <HomePage sideBar={sideBar} search={search}></HomePage>
+      <div 
+        className="
+          flex 
+          flex-col lg:flex-row 
+          w-full 
+          pt-10 
+          px-4 sm:px-6 md:px-10 lg:px-12 
+          pb-0 
+          box-border
+        "
+      >
+        {/* Sidebar */}
+        <SideBar sideBar={sideBar} />
 
-    </div>
+        {/* Homepage Content */}
+        <div className="flex-1 w-full">
+          <HomePage sideBar={sideBar} search={search} />
+        </div>
+      </div>
     </>
   )
 }
