@@ -363,4 +363,4 @@ function Video() {
   );
 }
 
-export default React.memo(Video);
+export default Video;
