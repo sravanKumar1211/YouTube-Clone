@@ -1,49 +1,76 @@
+
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, {
+  useEffect,
+  useState,
+  useMemo,
+  lazy,
+  Suspense
+} from "react";
 import { Link } from "react-router-dom";
+
+// Lazy load the VideoCard (optimization)
+const VideoCard = lazy(() => import("./VideoCard"));
 
 function HomePage({ sideBar, search }) {
   const [data, setData] = useState([]);
-  const token = localStorage.getItem("token");   // ← no JSON.parse
-
-  useEffect(() => {
   const token = localStorage.getItem("token");
 
-  axios.get("http://localhost:3000/api/allvideo", {
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
-  })
-  .then(res => setData(res.data.videos))
-  .catch(err => console.log(err));
-}, []);
+  // Fetch videos — runs once
+  useEffect(() => {
+    const token = localStorage.getItem("token");
 
-//console.log(data)
+    axios
+      .get("http://localhost:3000/api/allvideo", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => setData(res.data.videos))
+      .catch((err) => console.log(err));
+  }, []);
 
+  // Memoized filtering (prevents recomputation)
+  const videosToShow = useMemo(() => {
+    if (!search) return data;
 
-const filteredData = data.filter((item) => {
-    const title = item.title.toLowerCase();
-    const category = item.category?.toLowerCase();
     const term = search.toLowerCase();
 
-    return (
-      title.includes(term) ||
-      category?.includes(term)
-    );
-  });
+    return data.filter((item) => {
+      const title = item.title.toLowerCase();
+      const category = item.category?.toLowerCase();
+      return title.includes(term) || category?.includes(term);
+    });
+  }, [data, search]);
 
-  const videosToShow = search ? filteredData : data;
-
-
-  const categories = [
-    "All", "Software", "News", "Sports", "Gaming", "Tollywood", "Bollywood",
-    "Music", "Web Development", "DSA", "AI & ML", "Stocks", "Podcasts",
-    "Movies", "History", "Fitness", "Technology", "Trending", "Live"
-  ];
+  // Categories memoized
+  const categories = useMemo(
+    () => [
+      "All",
+      "Software",
+      "News",
+      "Sports",
+      "Gaming",
+      "Tollywood",
+      "Bollywood",
+      "Music",
+      "Web Development",
+      "DSA",
+      "AI & ML",
+      "Stocks",
+      "Podcasts",
+      "Movies",
+      "History",
+      "Fitness",
+      "Technology",
+      "Trending",
+      "Live",
+    ],
+    []
+  );
 
   return (
     <div className="w-full min-h-screen bg-white mt-[-40px]">
-
       {/* CATEGORY BAR */}
       <div className="sticky top-12 bg-white z-20 py-3">
         <div
@@ -63,7 +90,7 @@ const filteredData = data.filter((item) => {
         </div>
       </div>
 
-      {/* ------------------ CONDITIONAL RENDER ------------------ */}
+      {/* CONTENT */}
       {token ? (
         <div
           className="pt-5 pb-20"
@@ -81,43 +108,14 @@ const filteredData = data.filter((item) => {
             }}
           >
             {videosToShow?.map((item, i) => (
-              <div key={i} className="cursor-pointer">
-                <Link to={`/watch/${item._id}`}>
-                  {/* Thumbnail */}
-                  <div className="relative w-full h-64 bg-gray-200 rounded-xl overflow-hidden">
-                    <img
-                      src={item.thumbnailUrl}
-                      alt="Thumbnail"
-                      className="w-full h-full object-cover"
-                    />
-                    <span className="absolute bottom-2 right-2 bg-black text-white text-xs px-2 py-1 rounded">
-                      35:00
-                    </span>
-                  </div>
-                </Link>
-
-                {/* Video Info */}
-                 <Link to={`/user/${item?.user?._id}`}>
-                  <div className="flex gap-3 mt-3">
-                    <img
-                      src={item.user.profilePic}
-                      alt="Channel Icon"
-                      className="w-10 h-10 rounded-full"
-                    />
-                    <div className="flex flex-col">
-                      <h3 className="text-sm font-semibold leading-tight">
-                        {item.title}
-                      </h3>
-                      <p className="text-xs text-gray-600">
-                        {item.user.channelName}
-                      </p>
-                      <p className="text-xs text-gray-600">
-                        100 views • 10 days ago
-                      </p>
-                    </div>
-                  </div>
-                </Link>
-              </div>
+              <Suspense
+                key={i}
+                fallback={
+                  <div className="w-full h-64 bg-gray-200 rounded-xl animate-pulse"></div>
+                }
+              >
+                <VideoCard item={item} />
+              </Suspense>
             ))}
           </div>
         </div>
@@ -135,4 +133,4 @@ const filteredData = data.filter((item) => {
   );
 }
 
-export default HomePage;
+export default React.memo(HomePage);
