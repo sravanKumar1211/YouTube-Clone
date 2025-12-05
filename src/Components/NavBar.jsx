@@ -6,7 +6,7 @@ import { CgProfile } from "react-icons/cg";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
-function NavBar({ sideBarFn, sideBar }) {
+function NavBar({ sideBarFn, sideBar, search, setSearch }) {
   const [userPic, setUserPic] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [openMenu, setOpenMenu] = useState(false);
@@ -81,22 +81,27 @@ fetch("http://localhost:3000/auth/logout", {
         </div>
 
         {/* SEARCH BAR */}
-        <div className="flex items-center w-[45%] max-md:w-[60%]">
-          <div className="flex items-center w-full border border-gray-300 rounded-full overflow-hidden">
-            <input
-              type="text"
-              placeholder="Search"
-              className="w-full px-4 py-1 outline-none text-sm"
-            />
-            <button className="bg-gray-100 px-4 border-l border-gray-300 hover:bg-gray-200">
-              <IoSearchSharp className="text-xl" />
-            </button>
-          </div>
+       
+         <div className="flex items-center w-[45%] max-md:w-[60%]">
+        <div className="flex items-center w-full border border-gray-300 rounded-full overflow-hidden">
+          
+          <input
+            type="text"
+            placeholder="Search"
+            className="w-full px-4 py-1 outline-none text-sm"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}   // ✅ updates global search
+          />
 
-          <button className="ml-3 text-lg bg-gray-100 p-2 rounded-full hover:bg-gray-200">
-            <FaMicrophone />
+          <button className="bg-gray-100 px-4 border-l border-gray-300 hover:bg-gray-200">
+            <IoSearchSharp className="text-xl" />
           </button>
         </div>
+
+        <button className="ml-3 text-lg bg-gray-100 p-2 rounded-full hover:bg-gray-200">
+          <FaMicrophone />
+        </button>
+      </div>
 
         {/* RIGHT SECTION */}
         <div className="flex items-center gap-5 text-xl">

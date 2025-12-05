@@ -11,6 +11,7 @@ import Login from './Components/Login'
 
 function App() {
   const[sideBar,setSideBar]=useState(true);// state that holds the boolion valof sideBar when HamburgerMenu clicked
+  const[search,setSearch]=useState('');
   const sideBarFn=(val)=>{ setSideBar(val)};//function for handling sidebar val
 
   
@@ -18,10 +19,15 @@ function App() {
   return (
     <>
      {/* passed sidebar function and state to capture state and value */}
-    <NavBar sideBarFn={sideBarFn} sideBar={sideBar}></NavBar>
+      <NavBar 
+        sideBarFn={sideBarFn} 
+        sideBar={sideBar} 
+        search={search}                // pass search state to navbar
+        setSearch={setSearch}          // pass setter
+      />
     {/* sidebar passed to home component because side bar is a part of home */}
     <Routes>
-      <Route path ='/' element={<Home sideBar={sideBar}></Home>}></Route>
+      <Route path ='/' element={<Home sideBar={sideBar} search={search}></Home>}></Route>
       <Route path ='/watch/:id' element={<Video></Video>}></Route>
       <Route path ='/user/:id' element={<ChannelPage sideBar={sideBar}></ChannelPage>}></Route>
       <Route path ='/:id/upload' element={<VideoUploard></VideoUploard>}></Route>

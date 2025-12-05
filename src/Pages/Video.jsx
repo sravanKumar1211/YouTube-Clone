@@ -16,8 +16,6 @@ function Video() {
   const [userId, setUserId] = useState(null);
   const [likes, setLikes] = useState(videoData?.likesCount || 0);
   const [dislikes, setDislikes] = useState(videoData?.dislikesCount || 0);
-
-
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editMessage, setEditMessage] = useState("");
   const [showMenu, setShowMenu] = useState(null);

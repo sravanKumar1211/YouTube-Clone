@@ -2,7 +2,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
-function HomePage({ sideBar }) {
+function HomePage({ sideBar, search }) {
   const [data, setData] = useState([]);
   const token = localStorage.getItem("token");   // ← no JSON.parse
 
@@ -19,6 +19,20 @@ function HomePage({ sideBar }) {
 }, []);
 
 //console.log(data)
+
+
+const filteredData = data.filter((item) => {
+    const title = item.title.toLowerCase();
+    const category = item.category?.toLowerCase();
+    const term = search.toLowerCase();
+
+    return (
+      title.includes(term) ||
+      category?.includes(term)
+    );
+  });
+
+  const videosToShow = search ? filteredData : data;
 
 
   const categories = [
@@ -66,7 +80,7 @@ function HomePage({ sideBar }) {
                 : "repeat(4, minmax(0, 1fr))",
             }}
           >
-            {data?.map((item, i) => (
+            {videosToShow?.map((item, i) => (
               <div key={i} className="cursor-pointer">
                 <Link to={`/watch/${item._id}`}>
                   {/* Thumbnail */}
