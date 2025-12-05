@@ -27,27 +27,36 @@ function ChannelPage({ sideBar }) {
     fetchChannelData();
   }, [id]);
 
-  // DELETE VIDEO HANDLER
-  const handleDelete = async (videoId) => {
-    const token = localStorage.getItem("token");
+    const handleDelete = async (videoId) => {
+  console.log("❗ DELETE CLICKED for video ID:", videoId);
 
-    if (!window.confirm("Are you sure you want to delete this video?")) return;
+  const token = localStorage.getItem("token");
+  console.log("TOKEN FOUND:", token);
 
-    try {
-      await axios.delete(
-        `http://localhost:3000/channelapi/deletevideo/${videoId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+  // REMOVE CONFIRM — browser is blocking it
+  console.log("⚠️ CONFIRM REMOVED — executing delete directly");
 
-      setChannelVideos((prev) => prev.filter((v) => v._id !== videoId));
-      alert("Video deleted successfully!");
-    } catch (error) {
-      console.log(error);
-      alert("Failed to delete video");
-    }
-  };
+  try {
+    const res = await axios.delete(
+      `http://localhost:3000/channelapi/deletevideo/${videoId}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        data: { videoId }
+      }
+    );
+
+    console.log("✅ DELETE RESPONSE RECEIVED:", res.data);
+
+    setChannelVideos(prev => prev.filter(v => v._id !== videoId));
+    alert("Video deleted successfully!");
+  } catch (error) {
+    console.log("❌ DELETE ERROR:", error);
+    alert("Failed to delete video");
+  }
+};
+
+
+
 
   const channelInfo = channelVideos[0]?.user;
 

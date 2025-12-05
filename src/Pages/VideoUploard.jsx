@@ -1,14 +1,19 @@
 
 
 
-
-import React, { useState, useEffect } from "react";
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useMemo
+} from "react";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 
-export default function VideoUpload() {
-  const { videoId } = useParams();   // if exists → EDIT MODE
+function VideoUpload() {
+  const { videoId } = useParams();
   const navigate = useNavigate();
+
   const CLOUD_NAME = "dzdurdxzw";
   const UPLOAD_PRESET = "youtube-clone";
 
@@ -28,7 +33,9 @@ export default function VideoUpload() {
     more: "",
   });
 
-  // LOAD EXISTING VIDEO DATA FOR EDIT
+  // ==========================
+  // 📌 LOAD VIDEO FOR EDIT MODE
+  // ==========================
   useEffect(() => {
     if (!videoId) return;
 
@@ -63,17 +70,22 @@ export default function VideoUpload() {
     loadVideo();
   }, [videoId]);
 
-  // FORM INPUT HANDLER
-  const handleChange = (e) => {
+  // ==========================
+  // 📌 MEMOIZED INPUT HANDLER
+  // ==========================
+  const handleChange = useCallback((e) => {
     const { name, value, type, checked } = e.target;
+
     setVideoData((prev) => ({
       ...prev,
       [name]: type === "checkbox" ? checked : value,
     }));
-  };
+  }, []);
 
-  // CLOUDINARY UPLOAD
-  const uploadToCloudinary = async (file, type) => {
+  // ==========================
+  // 📌 MEMOIZED CLOUDINARY UPLOAD
+  // ==========================
+  const uploadToCloudinary = useCallback(async (file, type) => {
     const form = new FormData();
     form.append("file", file);
     form.append("upload_preset", UPLOAD_PRESET);
@@ -85,216 +97,89 @@ export default function VideoUpload() {
 
     const res = await axios.post(url, form);
     return res.data.secure_url;
-  };
+  }, []);
 
-  const handleFileUpload = async (e, fieldType) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  // ==========================
+  // 📌 FILE UPLOAD (Stable)
+  // ==========================
+  const handleFileUpload = useCallback(
+    async (e, fieldType) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
 
-    const uploadedUrl = await uploadToCloudinary(
-      file,
-      fieldType === "videoUrl" ? "video" : "image"
-    );
+      const uploadedUrl = await uploadToCloudinary(
+        file,
+        fieldType === "videoUrl" ? "video" : "image"
+      );
 
-    setVideoData((prev) => ({
-      ...prev,
-      [fieldType]: uploadedUrl,
-    }));
-  };
+      setVideoData((prev) => ({
+        ...prev,
+        [fieldType]: uploadedUrl,
+      }));
+    },
+    [uploadToCloudinary]
+  );
 
-  // SUBMIT HANDLER
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  // ==========================
+  // 📌 FORM SUBMIT (MEMOIZED)
+  // ==========================
+  const handleSubmit = useCallback(
+    async (e) => {
+      e.preventDefault();
 
-    const token = localStorage.getItem("token");
+      const token = localStorage.getItem("token");
 
-    const payload = {
-      ...videoData,
-      title: videoData.title.trim(),
-      tags:
-        videoData.tags
-          ?.split(",")
-          .map((t) => t.trim())
-          .filter(Boolean) || [],
-    };
+      const payload = {
+        ...videoData,
+        title: videoData.title.trim(),
+        tags:
+          videoData.tags
+            ?.split(",")
+            .map((t) => t.trim())
+            .filter(Boolean) || [],
+      };
 
-    try {
-      if (videoId) {
-        // UPDATE EXISTING VIDEO
-        await axios.put(
-          `http://localhost:3000/channelapi/updatevideo/${videoId}`,
-          payload,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
+      try {
+        if (videoId) {
+          await axios.put(
+            `http://localhost:3000/channelapi/updatevideo/${videoId}`,
+            payload,
+            { headers: { Authorization: `Bearer ${token}` } }
+          );
 
-        alert("Video updated successfully!");
+          alert("Video updated successfully!");
+          navigate(`/user/${JSON.parse(localStorage.getItem("user"))._id}`);
+          return;
+        }
+
+        await axios.post("http://localhost:3000/api/video", payload, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        alert("Video uploaded successfully!");
         navigate(`/user/${JSON.parse(localStorage.getItem("user"))._id}`);
-        return;
+      } catch (err) {
+        console.log(err);
+        alert("Something went wrong");
       }
+    },
+    [videoData, videoId, navigate]
+  );
 
-      // UPLOAD NEW VIDEO
-      await axios.post("http://localhost:3000/api/video", payload, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+  // ==========================
+  // 📌 MEMOIZED STATIC SELECT OPTIONS
+  // ==========================
+  const categoryOptions = useMemo(
+    () => ["Education", "Entertainment", "Music", "Blog"],
+    []
+  );
 
-      alert("Video uploaded successfully!");
-      navigate(`/user/${JSON.parse(localStorage.getItem("user"))._id}`);
-    } catch (err) {
-      console.log(err);
-      alert("Something went wrong");
-    }
-  };
+  const licenseOptions = useMemo(
+    () => ["standard", "creativeCommons"],
+    []
+  );
 
   return (
-//     <>
-//       {/* YOUR ENTIRE UI REMAINS SAME */}
-//       {/* I am NOT modifying UI, only logic above changes */}
-//       {/* Paste your exact UI below without edits */}
-
-
-
-
-
-
-// import React, { useState } from "react";
-// import axios from "axios";
-
-// export default function VideoUpload() {
-//   const CLOUD_NAME = "dzdurdxzw";
-//   const UPLOAD_PRESET = "youtube-clone";
-
-//   const [videoData, setVideoData] = useState({
-//     title: "",
-//     description: "",
-//     videoUrl: "", // Cloudinary video URL (backend expects this)
-//     thumbnailUrl: "", // Cloudinary image URL (backend expects this)
-//     tags: "",
-//     audience: "", // "everyone" or "kids"
-//     monetization: false,
-//     license: "", // "standard" or "creativeCommons"
-//     visibility: "", // "public" | "private" | "unlisted"
-//     category: "",
-//     date: "",
-//     checks: "",
-//     more: "",
-//   });
-
-//   // Simple controlled input handler
-//   const handleChange = (e) => {
-//     const { name, value, type, checked } = e.target;
-//     setVideoData((prev) => ({
-//       ...prev,
-//       [name]: type === "checkbox" ? checked : value,
-//     }));
-//   };
-
-//   // Cloudinary upload
-//   const uploadToCloudinary = async (file, type) => {
-//     const form = new FormData();
-//     form.append("file", file);
-//     form.append("upload_preset", UPLOAD_PRESET);
-
-//     const url =
-//       type === "video"
-//         ? `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/video/upload`
-//         : `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`;
-
-//     const res = await axios.post(url, form);
-//     return res.data.secure_url;
-//   };
-
-//   // fileType should match state key: "videoUrl" or "thumbnailUrl"
-//   const handleFileUpload = async (e, fieldType) => {
-//     const file = e.target.files?.[0];
-//     if (!file) return;
-
-//     try {
-//       const uploadedUrl = await uploadToCloudinary(
-//         file,
-//         fieldType === "videoUrl" ? "video" : "image"
-//       );
-
-//       setVideoData((prev) => ({
-//         ...prev,
-//         [fieldType]: uploadedUrl,
-//       }));
-
-//       console.log(`Uploaded ${fieldType}:`, uploadedUrl);
-//     } catch (err) {
-//       console.error("Upload failed:", err);
-//       alert("Upload failed — check console for details.");
-//     }
-//   };
-
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-
-//     // token read from localStorage (backend accepts Authorization header)
-//     const token = localStorage.getItem("token");
-
-//     // Build final payload to exactly match/backend-safe defaults
-//     const finalPayload = {
-//       ...videoData,
-
-//       // required fields -- trim title
-//       title: (videoData.title || "").trim(),
-//       videoUrl: videoData.videoUrl,
-//       thumbnailUrl: videoData.thumbnailUrl,
-
-//       // tags -> array
-//       tags:
-//         typeof videoData.tags === "string" && videoData.tags.trim() !== ""
-//           ? videoData.tags
-//               .split(",")
-//               .map((t) => t.trim())
-//               .filter(Boolean)
-//           : [],
-
-//       // enums & defaults
-//       audience: videoData.audience || "everyone",
-//       license: videoData.license || "standard",
-//       visibility: videoData.visibility || "public",
-//       category: videoData.category || "General",
-
-//       // boolean
-//       monetization: Boolean(videoData.monetization),
-
-//       // date fallback
-//       date: videoData.date || new Date().toISOString(),
-
-//       // optional safe defaults
-//       description: videoData.description || "",
-//       checks: videoData.checks || "pending",
-//       more: videoData.more || "",
-//     };
-
-//     // quick client-side validation for required fields
-//     if (!finalPayload.title || !finalPayload.videoUrl || !finalPayload.thumbnailUrl) {
-//       alert("Title, video and thumbnail are required before publishing.");
-//       return;
-//     }
-
-//     try {
-//       const res = await axios.post(
-//         "http://localhost:3000/api/video",
-//         finalPayload,
-//         {
-//           headers: {
-//             Authorization: `Bearer ${token}`,
-//           },
-//         }
-//       );
-
-//       console.log("UPLOAD SUCCESS:", res.data);
-//       alert("Video uploaded successfully!");
-//       // optional: reset or navigate away
-//     } catch (err) {
-//       console.error("UPLOAD ERROR:", err.response?.data || err.message);
-//       alert("Upload failed — check console for details.");
-//     }
-//   };
-
-//   return (
     <div className="min-h-screen bg-[#f9f9f9] p-6">
       <form
         onSubmit={handleSubmit}
@@ -302,7 +187,9 @@ export default function VideoUpload() {
       >
         {/* HEADER */}
         <div className="flex items-center justify-between px-6 py-4 border-b">
-          <h2 className="text-xl font-semibold text-gray-800">Upload videos</h2>
+          <h2 className="text-xl font-semibold text-gray-800">
+            Upload/Edit videos
+          </h2>
 
           <div className="flex gap-3">
             <button
@@ -311,6 +198,7 @@ export default function VideoUpload() {
             >
               Cancel
             </button>
+
             <button
               type="submit"
               className="px-5 py-2 rounded-full bg-blue-600 text-white text-sm font-medium hover:bg-blue-700"
@@ -320,6 +208,9 @@ export default function VideoUpload() {
           </div>
         </div>
 
+        {/* ==============================
+            🔥 Main Form Body
+        =============================== */}
         <div className="grid grid-cols-12 gap-8 px-6 py-6">
           {/* LEFT AREA */}
           <div className="col-span-12 lg:col-span-8 space-y-8">
@@ -383,7 +274,7 @@ export default function VideoUpload() {
               />
             </div>
 
-            {/* THUMBNAIL UPLOAD */}
+            {/* THUMBNAIL */}
             <div>
               <label className="block text-sm font-medium">Thumbnail</label>
 
@@ -393,7 +284,6 @@ export default function VideoUpload() {
                     <img
                       src={videoData.thumbnailUrl}
                       className="w-full h-full object-cover"
-                      alt="thumbnail"
                     />
                   ) : (
                     "Thumbnail preview"
@@ -418,7 +308,6 @@ export default function VideoUpload() {
               <input
                 type="text"
                 name="tags"
-                placeholder="tag1, tag2, tag3"
                 value={videoData.tags}
                 onChange={handleChange}
                 className="w-full border rounded-lg px-4 py-2 text-sm"
@@ -435,8 +324,8 @@ export default function VideoUpload() {
                     type="radio"
                     name="audience"
                     value="kids"
-                    onChange={handleChange}
                     checked={videoData.audience === "kids"}
+                    onChange={handleChange}
                     className="accent-blue-600"
                   />
                   Kids
@@ -447,8 +336,8 @@ export default function VideoUpload() {
                     type="radio"
                     name="audience"
                     value="everyone"
-                    onChange={handleChange}
                     checked={videoData.audience === "everyone"}
+                    onChange={handleChange}
                     className="accent-blue-600"
                   />
                   Everyone
@@ -457,7 +346,9 @@ export default function VideoUpload() {
             </div>
           </div>
 
-          {/* RIGHT PANEL */}
+          {/* ===========================
+             RIGHT PANEL
+          ============================ */}
           <div className="col-span-12 lg:col-span-4 space-y-6">
             {/* VISIBILITY */}
             <div className="bg-white border rounded-xl p-5 shadow-sm">
@@ -469,8 +360,8 @@ export default function VideoUpload() {
                     type="radio"
                     name="visibility"
                     value="public"
-                    onChange={handleChange}
                     checked={videoData.visibility === "public"}
+                    onChange={handleChange}
                     className="accent-blue-600"
                   />
                   Public
@@ -481,8 +372,8 @@ export default function VideoUpload() {
                     type="radio"
                     name="visibility"
                     value="unlisted"
-                    onChange={handleChange}
                     checked={videoData.visibility === "unlisted"}
+                    onChange={handleChange}
                     className="accent-blue-600"
                   />
                   Unlisted
@@ -493,8 +384,8 @@ export default function VideoUpload() {
                     type="radio"
                     name="visibility"
                     value="private"
-                    onChange={handleChange}
                     checked={videoData.visibility === "private"}
+                    onChange={handleChange}
                     className="accent-blue-600"
                   />
                   Private
@@ -512,8 +403,11 @@ export default function VideoUpload() {
                 className="w-full border rounded-lg px-3 py-2 text-sm"
               >
                 <option value="">Select license</option>
-                <option value="standard">Standard</option>
-                <option value="creativeCommons">Creative Commons</option>
+                {licenseOptions.map((l) => (
+                  <option key={l} value={l}>
+                    {l}
+                  </option>
+                ))}
               </select>
             </div>
 
@@ -541,16 +435,19 @@ export default function VideoUpload() {
                 className="w-full border rounded-lg px-3 py-2 text-sm"
               >
                 <option value="">Select</option>
-                <option value="Education">Education</option>
-                <option value="Entertainment">Entertainment</option>
-                <option value="Music">Music</option>
-                <option value="Blog">People & Blogs</option>
+                {categoryOptions.map((c) => (
+                  <option key={c} value={c}>
+                    {c}
+                  </option>
+                ))}
               </select>
             </div>
 
             {/* DATE */}
             <div className="bg-white border rounded-xl p-5 shadow-sm">
-              <label className="block text-sm font-medium mb-2">Recording Date</label>
+              <label className="block text-sm font-medium mb-2">
+                Recording Date
+              </label>
               <input
                 type="date"
                 name="date"
@@ -560,9 +457,11 @@ export default function VideoUpload() {
               />
             </div>
 
-            {/* MORE */}
+            {/* MORE OPTIONS */}
             <div className="bg-white border rounded-xl p-5 shadow-sm">
-              <label className="block text-sm font-medium mb-2">More Options</label>
+              <label className="block text-sm font-medium mb-2">
+                More Options
+              </label>
               <textarea
                 name="more"
                 value={videoData.more}
@@ -576,3 +475,5 @@ export default function VideoUpload() {
     </div>
   );
 }
+
+export default React.memo(VideoUpload);
