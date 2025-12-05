@@ -1,44 +1,44 @@
-import React, { useEffect, useState } from 'react'
-import axios from 'axios'
-import NavBar from './Components/NavBar'
-import Home from './Pages/Home'
-import {Route,Routes} from 'react-router-dom'
-import Video from './Pages/Video';
-import ChannelPage from './Pages/ChannelPage';
-import VideoUploard from './Pages/VideoUploard';
-import SignIn from './Components/SignIn'
-import Login from './Components/Login'
+import React, { useState, lazy, Suspense, useCallback } from "react";
+import { Routes, Route } from "react-router-dom";
+import NavBar from "./Components/NavBar";
+
+const Home = lazy(() => import("./Pages/Home"));
+const Video = lazy(() => import("./Pages/Video"));
+const ChannelPage = lazy(() => import("./Pages/ChannelPage"));
+const VideoUpload = lazy(() => import("./Pages/VideoUploard"));
+const SignIn = lazy(() => import("./Components/SignIn"));
+const Login = lazy(() => import("./Components/Login"));
 
 function App() {
-  const[sideBar,setSideBar]=useState(true);// state that holds the boolion valof sideBar when HamburgerMenu clicked
-  const[search,setSearch]=useState('');
-  const sideBarFn=(val)=>{ setSideBar(val)};//function for handling sidebar val
+  const [sideBar, setSideBar] = useState(true);
+  const [search, setSearch] = useState("");
 
-  
+  const sideBarFn = useCallback((val) => {
+    setSideBar(val);
+  }, []);
 
   return (
     <>
-     {/* passed sidebar function and state to capture state and value */}
-      <NavBar 
-        sideBarFn={sideBarFn} 
-        sideBar={sideBar} 
-        search={search}                // pass search state to navbar
-        setSearch={setSearch}          // pass setter
+      <NavBar
+        sideBarFn={sideBarFn}
+        sideBar={sideBar}
+        search={search}
+        setSearch={setSearch}
       />
-    {/* sidebar passed to home component because side bar is a part of home */}
-    <Routes>
-      <Route path ='/' element={<Home sideBar={sideBar} search={search}></Home>}></Route>
-      <Route path ='/watch/:id' element={<Video></Video>}></Route>
-      <Route path ='/user/:id' element={<ChannelPage sideBar={sideBar}></ChannelPage>}></Route>
-      <Route path ='/:id/upload' element={<VideoUploard></VideoUploard>}></Route>
-      <Route path ='/signin' element={<SignIn></SignIn>}></Route>
-      <Route path ='/login' element={<Login></Login>}></Route>
-      <Route path="/edit/:videoId" element={<VideoUploard></VideoUploard>} />
 
-
-    </Routes>
+      <Suspense fallback={<div className="pt-20 text-center">Loading...</div>}>
+        <Routes>
+          <Route path="/" element={<Home sideBar={sideBar} search={search} />} />
+          <Route path="/watch/:id" element={<Video />} />
+          <Route path="/user/:id" element={<ChannelPage sideBar={sideBar} />} />
+          <Route path="/:id/upload" element={<VideoUpload />} />
+          <Route path="/edit/:videoId" element={<VideoUpload />} />
+          <Route path="/signin" element={<SignIn />} />
+          <Route path="/login" element={<Login />} />
+        </Routes>
+      </Suspense>
     </>
-  )
+  );
 }
 
-export default App
+export default App;

@@ -19,6 +19,7 @@ import logo from "../assets/youtube.png";
 import studio from "../assets/youtube-studio-icon.png";
 import music from "../assets/youtube-music-icon.png";
 import kids from "../assets/youtube-kids.png";
+import { Link } from "react-router-dom";
 
 function SideBar({sideBar}) {
   return (
@@ -28,9 +29,12 @@ function SideBar({sideBar}) {
 
         {/* SECTION 1 */}
         <ul className="space-y-1">
+          <Link to={'/'}>
           <li className="flex items-center gap-4 px-3 py-2 rounded-lg hover:bg-gray-100 cursor-pointer">
             <MdHome className="text-xl" /> Home
           </li>
+          </Link>
+
           <li className="flex items-center gap-4 px-3 py-2 rounded-lg hover:bg-gray-100 cursor-pointer">
             <SiYoutubeshorts className="text-xl" /> Shorts
           </li>
