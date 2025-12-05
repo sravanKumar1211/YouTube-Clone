@@ -1,27 +1,69 @@
-import React, { useState } from "react";
+
+
+
+
+import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { useParams, useNavigate } from "react-router-dom";
 
 export default function VideoUpload() {
+  const { videoId } = useParams();   // if exists → EDIT MODE
+  const navigate = useNavigate();
   const CLOUD_NAME = "dzdurdxzw";
   const UPLOAD_PRESET = "youtube-clone";
 
   const [videoData, setVideoData] = useState({
     title: "",
     description: "",
-    videoUrl: "", // Cloudinary video URL (backend expects this)
-    thumbnailUrl: "", // Cloudinary image URL (backend expects this)
+    videoUrl: "",
+    thumbnailUrl: "",
     tags: "",
-    audience: "", // "everyone" or "kids"
+    audience: "",
     monetization: false,
-    license: "", // "standard" or "creativeCommons"
-    visibility: "", // "public" | "private" | "unlisted"
+    license: "",
+    visibility: "",
     category: "",
     date: "",
     checks: "",
     more: "",
   });
 
-  // Simple controlled input handler
+  // LOAD EXISTING VIDEO DATA FOR EDIT
+  useEffect(() => {
+    if (!videoId) return;
+
+    const loadVideo = async () => {
+      try {
+        const res = await axios.get(
+          `http://localhost:3000/api/getvideobyid/${videoId}`
+        );
+
+        const v = res.data.video;
+
+        setVideoData({
+          title: v.title,
+          description: v.description,
+          videoUrl: v.videoUrl,
+          thumbnailUrl: v.thumbnailUrl,
+          tags: v.tags.join(", "),
+          audience: v.audience,
+          monetization: v.monetization,
+          license: v.license,
+          visibility: v.visibility,
+          category: v.category,
+          date: v.date?.slice(0, 10),
+          checks: v.checks,
+          more: v.more,
+        });
+      } catch (err) {
+        console.log("Error loading video:", err);
+      }
+    };
+
+    loadVideo();
+  }, [videoId]);
+
+  // FORM INPUT HANDLER
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setVideoData((prev) => ({
@@ -30,7 +72,7 @@ export default function VideoUpload() {
     }));
   };
 
-  // Cloudinary upload
+  // CLOUDINARY UPLOAD
   const uploadToCloudinary = async (file, type) => {
     const form = new FormData();
     form.append("file", file);
@@ -45,98 +87,214 @@ export default function VideoUpload() {
     return res.data.secure_url;
   };
 
-  // fileType should match state key: "videoUrl" or "thumbnailUrl"
   const handleFileUpload = async (e, fieldType) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    try {
-      const uploadedUrl = await uploadToCloudinary(
-        file,
-        fieldType === "videoUrl" ? "video" : "image"
-      );
+    const uploadedUrl = await uploadToCloudinary(
+      file,
+      fieldType === "videoUrl" ? "video" : "image"
+    );
 
-      setVideoData((prev) => ({
-        ...prev,
-        [fieldType]: uploadedUrl,
-      }));
-
-      console.log(`Uploaded ${fieldType}:`, uploadedUrl);
-    } catch (err) {
-      console.error("Upload failed:", err);
-      alert("Upload failed — check console for details.");
-    }
+    setVideoData((prev) => ({
+      ...prev,
+      [fieldType]: uploadedUrl,
+    }));
   };
 
+  // SUBMIT HANDLER
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // token read from localStorage (backend accepts Authorization header)
     const token = localStorage.getItem("token");
 
-    // Build final payload to exactly match/backend-safe defaults
-    const finalPayload = {
+    const payload = {
       ...videoData,
-
-      // required fields -- trim title
-      title: (videoData.title || "").trim(),
-      videoUrl: videoData.videoUrl,
-      thumbnailUrl: videoData.thumbnailUrl,
-
-      // tags -> array
+      title: videoData.title.trim(),
       tags:
-        typeof videoData.tags === "string" && videoData.tags.trim() !== ""
-          ? videoData.tags
-              .split(",")
-              .map((t) => t.trim())
-              .filter(Boolean)
-          : [],
-
-      // enums & defaults
-      audience: videoData.audience || "everyone",
-      license: videoData.license || "standard",
-      visibility: videoData.visibility || "public",
-      category: videoData.category || "General",
-
-      // boolean
-      monetization: Boolean(videoData.monetization),
-
-      // date fallback
-      date: videoData.date || new Date().toISOString(),
-
-      // optional safe defaults
-      description: videoData.description || "",
-      checks: videoData.checks || "pending",
-      more: videoData.more || "",
+        videoData.tags
+          ?.split(",")
+          .map((t) => t.trim())
+          .filter(Boolean) || [],
     };
 
-    // quick client-side validation for required fields
-    if (!finalPayload.title || !finalPayload.videoUrl || !finalPayload.thumbnailUrl) {
-      alert("Title, video and thumbnail are required before publishing.");
-      return;
-    }
-
     try {
-      const res = await axios.post(
-        "http://localhost:3000/api/video",
-        finalPayload,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      if (videoId) {
+        // UPDATE EXISTING VIDEO
+        await axios.put(
+          `http://localhost:3000/channelapi/updatevideo/${videoId}`,
+          payload,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
 
-      console.log("UPLOAD SUCCESS:", res.data);
+        alert("Video updated successfully!");
+        navigate(`/user/${JSON.parse(localStorage.getItem("user"))._id}`);
+        return;
+      }
+
+      // UPLOAD NEW VIDEO
+      await axios.post("http://localhost:3000/api/video", payload, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
       alert("Video uploaded successfully!");
-      // optional: reset or navigate away
+      navigate(`/user/${JSON.parse(localStorage.getItem("user"))._id}`);
     } catch (err) {
-      console.error("UPLOAD ERROR:", err.response?.data || err.message);
-      alert("Upload failed — check console for details.");
+      console.log(err);
+      alert("Something went wrong");
     }
   };
 
   return (
+//     <>
+//       {/* YOUR ENTIRE UI REMAINS SAME */}
+//       {/* I am NOT modifying UI, only logic above changes */}
+//       {/* Paste your exact UI below without edits */}
+
+
+
+
+
+
+// import React, { useState } from "react";
+// import axios from "axios";
+
+// export default function VideoUpload() {
+//   const CLOUD_NAME = "dzdurdxzw";
+//   const UPLOAD_PRESET = "youtube-clone";
+
+//   const [videoData, setVideoData] = useState({
+//     title: "",
+//     description: "",
+//     videoUrl: "", // Cloudinary video URL (backend expects this)
+//     thumbnailUrl: "", // Cloudinary image URL (backend expects this)
+//     tags: "",
+//     audience: "", // "everyone" or "kids"
+//     monetization: false,
+//     license: "", // "standard" or "creativeCommons"
+//     visibility: "", // "public" | "private" | "unlisted"
+//     category: "",
+//     date: "",
+//     checks: "",
+//     more: "",
+//   });
+
+//   // Simple controlled input handler
+//   const handleChange = (e) => {
+//     const { name, value, type, checked } = e.target;
+//     setVideoData((prev) => ({
+//       ...prev,
+//       [name]: type === "checkbox" ? checked : value,
+//     }));
+//   };
+
+//   // Cloudinary upload
+//   const uploadToCloudinary = async (file, type) => {
+//     const form = new FormData();
+//     form.append("file", file);
+//     form.append("upload_preset", UPLOAD_PRESET);
+
+//     const url =
+//       type === "video"
+//         ? `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/video/upload`
+//         : `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`;
+
+//     const res = await axios.post(url, form);
+//     return res.data.secure_url;
+//   };
+
+//   // fileType should match state key: "videoUrl" or "thumbnailUrl"
+//   const handleFileUpload = async (e, fieldType) => {
+//     const file = e.target.files?.[0];
+//     if (!file) return;
+
+//     try {
+//       const uploadedUrl = await uploadToCloudinary(
+//         file,
+//         fieldType === "videoUrl" ? "video" : "image"
+//       );
+
+//       setVideoData((prev) => ({
+//         ...prev,
+//         [fieldType]: uploadedUrl,
+//       }));
+
+//       console.log(`Uploaded ${fieldType}:`, uploadedUrl);
+//     } catch (err) {
+//       console.error("Upload failed:", err);
+//       alert("Upload failed — check console for details.");
+//     }
+//   };
+
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+
+//     // token read from localStorage (backend accepts Authorization header)
+//     const token = localStorage.getItem("token");
+
+//     // Build final payload to exactly match/backend-safe defaults
+//     const finalPayload = {
+//       ...videoData,
+
+//       // required fields -- trim title
+//       title: (videoData.title || "").trim(),
+//       videoUrl: videoData.videoUrl,
+//       thumbnailUrl: videoData.thumbnailUrl,
+
+//       // tags -> array
+//       tags:
+//         typeof videoData.tags === "string" && videoData.tags.trim() !== ""
+//           ? videoData.tags
+//               .split(",")
+//               .map((t) => t.trim())
+//               .filter(Boolean)
+//           : [],
+
+//       // enums & defaults
+//       audience: videoData.audience || "everyone",
+//       license: videoData.license || "standard",
+//       visibility: videoData.visibility || "public",
+//       category: videoData.category || "General",
+
+//       // boolean
+//       monetization: Boolean(videoData.monetization),
+
+//       // date fallback
+//       date: videoData.date || new Date().toISOString(),
+
+//       // optional safe defaults
+//       description: videoData.description || "",
+//       checks: videoData.checks || "pending",
+//       more: videoData.more || "",
+//     };
+
+//     // quick client-side validation for required fields
+//     if (!finalPayload.title || !finalPayload.videoUrl || !finalPayload.thumbnailUrl) {
+//       alert("Title, video and thumbnail are required before publishing.");
+//       return;
+//     }
+
+//     try {
+//       const res = await axios.post(
+//         "http://localhost:3000/api/video",
+//         finalPayload,
+//         {
+//           headers: {
+//             Authorization: `Bearer ${token}`,
+//           },
+//         }
+//       );
+
+//       console.log("UPLOAD SUCCESS:", res.data);
+//       alert("Video uploaded successfully!");
+//       // optional: reset or navigate away
+//     } catch (err) {
+//       console.error("UPLOAD ERROR:", err.response?.data || err.message);
+//       alert("Upload failed — check console for details.");
+//     }
+//   };
+
+//   return (
     <div className="min-h-screen bg-[#f9f9f9] p-6">
       <form
         onSubmit={handleSubmit}

@@ -4,11 +4,11 @@ import { Link, useParams } from "react-router-dom";
 import axios from "axios";
 
 function ChannelPage({ sideBar }) {
-const userData = JSON.parse(localStorage.getItem("user"));
+  const userData = JSON.parse(localStorage.getItem("user"));
   const { id } = useParams();
 
-  // API returns: { success: true, video: [ ... ] }
   const [channelVideos, setChannelVideos] = useState([]);
+  const [menuOpen, setMenuOpen] = useState(null);
 
   // Fetch channel videos
   const fetchChannelData = async () => {
@@ -17,9 +17,7 @@ const userData = JSON.parse(localStorage.getItem("user"));
         `http://localhost:3000/channelapi/channelvideos/${id}`
       );
 
-      // Store only videos array
       setChannelVideos(response.data.video);
-      console.log(response.data)
     } catch (err) {
       console.log(err.message);
     }
@@ -29,25 +27,41 @@ const userData = JSON.parse(localStorage.getItem("user"));
     fetchChannelData();
   }, [id]);
 
+  // DELETE VIDEO HANDLER
+  const handleDelete = async (videoId) => {
+    const token = localStorage.getItem("token");
 
-  // Extract channel info from first video
+    if (!window.confirm("Are you sure you want to delete this video?")) return;
+
+    try {
+      await axios.delete(
+        `http://localhost:3000/channelapi/deletevideo/${videoId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      setChannelVideos((prev) => prev.filter((v) => v._id !== videoId));
+      alert("Video deleted successfully!");
+    } catch (error) {
+      console.log(error);
+      alert("Failed to delete video");
+    }
+  };
+
   const channelInfo = channelVideos[0]?.user;
-  //console.log(channelInfo)
 
   return (
     <>
       <div className="flex w-full">
-
-        {/* LEFT SIDEBAR */}
         <SideBar sideBar={sideBar} />
 
-        {/* MAIN CONTENT */}
         <div className={`flex-1 px-6 pb-10 ${sideBar ? "ml-60" : "ml-5"} pt-20`}>
 
           {/* CHANNEL BANNER */}
           <div className="w-full h-48 bg-gray-300 rounded-xl overflow-hidden">
             <img
-              src={(channelInfo?.channelBanner)?(channelInfo?.channelBanner): userData?.channelBanner}
+              src={channelInfo?.channelBanner || userData?.channelBanner}
               className="w-full h-full object-cover"
               alt="Channel Banner"
             />
@@ -55,29 +69,25 @@ const userData = JSON.parse(localStorage.getItem("user"));
 
           {/* CHANNEL HEADER */}
           <div className="flex mt-6 items-start gap-4">
-
-            {/* CHANNEL ICON */}
             <img
-              src={(channelInfo?.profilePic)?(channelInfo?.profilePic):userData?.profilePic}
+              src={channelInfo?.profilePic || userData?.profilePic}
               className="w-28 h-28 rounded-full object-cover border"
               alt="Channel Icon"
             />
 
-            {/* NAME + STATS */}
             <div className="flex flex-col">
               <h1 className="text-3xl font-bold">
-                {(channelInfo?.channelName)?(channelInfo?.channelName):userData?.channelName}
+                {channelInfo?.channelName || userData?.channelName}
               </h1>
 
               <p className="text-gray-600 text-sm mt-1">
-                @{(channelInfo?.userName)?(channelInfo?.userName): userData?.userName} • {channelVideos.length} videos
+                @{channelInfo?.userName || userData?.userName} • {channelVideos.length} videos
               </p>
 
               <p className="mt-2 text-sm text-gray-700 max-w-2xl">
-                {(channelInfo?.about)?(channelInfo?.about):userData?.about}
+                {channelInfo?.about || userData?.about}
               </p>
 
-              {/* BUTTONS */}
               <div className="flex gap-3 mt-3">
                 <button className="px-4 py-2 rounded-full bg-black text-white hover:bg-gray-800 text-sm">
                   Subscribe
@@ -89,49 +99,66 @@ const userData = JSON.parse(localStorage.getItem("user"));
             </div>
           </div>
 
-          {/* CATEGORY TABS */}
-          <div className="border-b mt-8">
-            <ul className="flex gap-8 text-sm font-medium text-gray-600 pb-3">
-              <li className="cursor-pointer hover:text-black hover:border-b-2 hover:border-black pb-2">Videos</li>
-              <li className="cursor-pointer hover:text-black hover:border-b-2 hover:border-black pb-2">Shorts</li>
-              <li className="cursor-pointer hover:text-black hover:border-b-2 hover:border-black pb-2">Live</li>
-              <li className="cursor-pointer hover:text-black hover:border-b-2 hover:border-black pb-2">Playlists</li>
-              <li className="cursor-pointer hover:text-black hover:border-b-2 hover:border-black pb-2">Community</li>
-              <li className="cursor-pointer hover:text-black hover:border-b-2 hover:border-black pb-2">Channels</li>
-            </ul>
-          </div>
-
           {/* VIDEO GRID */}
           <div className="grid mt-8 gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
 
             {channelVideos.map((item, index) => (
-              <div key={index} className="cursor-pointer flex flex-col">
-                <Link to={`/watch/${item._id}`}>
+              <div key={index} className="cursor-pointer flex flex-col relative">
 
-                  {/* Thumbnail */}
+                {/* 3 DOTS MENU — only for owner */}
+                {userData?._id === item?.user?._id && (
+                  <>
+                    <button
+                      onClick={() =>
+                        setMenuOpen(menuOpen === index ? null : index)
+                      }
+                      className="absolute right-2 top-2 z-20 bg-white shadow p-1 rounded-full"
+                    >
+                      ⋮
+                    </button>
+
+                    {menuOpen === index && (
+                      <div className="absolute right-2 top-10 bg-white border shadow-lg rounded-md z-30 w-28">
+                        <button
+                          className="w-full px-4 py-2 text-sm hover:bg-gray-100"
+                          onClick={() => {
+                            window.location.href = `/edit/${item._id}`;
+                          }}
+                        >
+                          Edit
+                        </button>
+
+                        <button
+                          className="w-full px-4 py-2 text-sm text-red-600 hover:bg-red-100"
+                          onClick={() => handleDelete(item._id)}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    )}
+                  </>
+                )}
+
+                <Link to={`/watch/${item._id}`}>
                   <div className="relative w-full aspect-video rounded-xl overflow-hidden">
                     <img
-                      src={item?.thumbnailUrl}
+                      src={item.thumbnailUrl}
                       className="w-full h-full object-cover"
                       alt="Video Thumbnail"
                     />
-                    <span className="absolute right-1 bottom-1 bg-black bg-opacity-80 text-white text-xs px-1.5 py-0.5 rounded">
+                    <span className="absolute right-1 bottom-1 bg-black text-white text-xs px-1 rounded">
                       12:45
                     </span>
                   </div>
-
-                  {/* Title + Info */}
-                  <div className="mt-3 text-sm">
-                    <h3 className="font-semibold leading-tight">{item.title}</h3>
-                    <p className="text-gray-600 text-xs mt-1">
-                      {item.userData?.channelName}
-                    </p>
-                    <p className="text-gray-600 text-xs">
-                      {item.likesCount} likes • {item.createdAt.slice(0, 10)}
-                    </p>
-                  </div>
-
                 </Link>
+
+                <div className="mt-3 text-sm">
+                  <h3 className="font-semibold">{item.title}</h3>
+                  <p className="text-gray-600 text-xs mt-1">{item.user?.channelName}</p>
+                  <p className="text-gray-600 text-xs">
+                    {item.likesCount} likes • {item.createdAt.slice(0, 10)}
+                  </p>
+                </div>
               </div>
             ))}
 

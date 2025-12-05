@@ -33,6 +33,8 @@ function App() {
       <Route path ='/:id/upload' element={<VideoUploard></VideoUploard>}></Route>
       <Route path ='/signin' element={<SignIn></SignIn>}></Route>
       <Route path ='/login' element={<Login></Login>}></Route>
+      <Route path="/edit/:videoId" element={<VideoUploard></VideoUploard>} />
+
 
     </Routes>
     </>
