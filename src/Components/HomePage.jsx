@@ -1,4 +1,3 @@
-
 import axios from "axios";
 import React, {
   useEffect,
@@ -8,13 +7,20 @@ import React, {
   Suspense
 } from "react";
 
+// Lazy load VideoCard for better performance
 const VideoCard = lazy(() => import("./VideoCard"));
 
 function HomePage({ sideBar, search }) {
+  // Store all videos
   const [data, setData] = useState([]);
+
+  // Store the selected category (default: All)
   const [selectedCategory, setSelectedCategory] = useState("All");
+
+  // Get token from local storage
   const token = localStorage.getItem("token");
 
+  // Fetch videos on page load
   useEffect(() => {
     const token = localStorage.getItem("token");
 
@@ -28,6 +34,7 @@ function HomePage({ sideBar, search }) {
       .catch(err => console.log(err));
   }, []);
 
+  // All categories list (memoized so it doesn't recalc every render)
   const categories = useMemo(
     () => [
       "All",
@@ -49,31 +56,34 @@ function HomePage({ sideBar, search }) {
     []
   );
 
+  // Extract tags from video item
   const parseTags = (item) => {
     if (!item.tags || !item.tags[0]) return [];
 
     return item.tags[0]
-      .split("#")
-      .map(t => t.trim())
+      .split("#")              // split by #
+      .map(t => t.trim())      // remove spaces
       .filter(t => t.length > 0)
       .map(t => t.toLowerCase());
   };
 
+  // Filter videos based on search + selected category
   const videosToShow = useMemo(() => {
     const term = search.toLowerCase();
 
     return data.filter(item => {
       const title = item.title?.toLowerCase() || "";
       const category = item.category?.toLowerCase() || "";
-
       const tagList = parseTags(item);
 
+      // Search match for title/category/tags
       const matchesSearch =
         !search ||
         title.includes(term) ||
         category.includes(term) ||
         tagList.some(t => t.includes(term));
 
+      // Category match
       const matchesCategory =
         selectedCategory === "All" ||
         category === selectedCategory.toLowerCase() ||
@@ -90,6 +100,7 @@ function HomePage({ sideBar, search }) {
       <div className="sticky top-12 bg-white z-20 py-3">
         <div
           className="flex overflow-x-auto gap-3 px-3 scrollbar-hide"
+          // Category bar padding shifts when sidebar opens
           style={{
             paddingLeft: sideBar ? "240px" : "16px",
           }}
@@ -111,7 +122,7 @@ function HomePage({ sideBar, search }) {
         </div>
       </div>
 
-      {/* CONTENT */}
+      {/* MAIN CONTENT */}
       {token ? (
         <div
           className="pt-5 pb-20"
@@ -120,21 +131,24 @@ function HomePage({ sideBar, search }) {
             paddingRight: "16px",
           }}
         >
-          
+
+          {/* VIDEO GRID */}
           <div
-              className={`
+            className={`
                 grid gap-5
                 grid-cols-1
                 sm:grid-cols-2
                 lg:grid-cols-3
                 xl:${sideBar ? "grid-cols-3" : "grid-cols-4"}
               `}
-            >
+          >
 
+            {/* Render videos */}
             {videosToShow?.map((item, i) => (
               <Suspense
                 key={i}
                 fallback={
+                  // Skeleton loading card
                   <div className="w-full h-40 sm:h-48 md:h-56 bg-gray-200 rounded-xl animate-pulse"></div>
                 }
               >
@@ -144,6 +158,7 @@ function HomePage({ sideBar, search }) {
           </div>
         </div>
       ) : (
+        // Shown when user not logged in
         <div
           className="w-full flex justify-center items-center mt-20 text-center px-4"
           style={{ paddingLeft: sideBar ? "240px" : "16px" }}
@@ -158,13 +173,6 @@ function HomePage({ sideBar, search }) {
 }
 
 export default React.memo(HomePage);
-
-
-
-
-
-
-
 
 
 

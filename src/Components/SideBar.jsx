@@ -24,6 +24,7 @@ import { Link } from "react-router-dom";
 function SideBar({ sideBar }) {
   return (
     <>
+      {/* MAIN SIDEBAR CONTAINER */}
       <div
         className={`
           ${sideBar ? "translate-x-0" : "-translate-x-full"}
@@ -34,7 +35,9 @@ function SideBar({ sideBar }) {
         `}
       >
 
-        {/* SECTION 1 */}
+        
+        {/* SECTION 1 : MAIN NAVIGATION (Home, Shorts) */}
+        
         <ul className="space-y-1">
           <Link to={"/"}>
             <li className="flex items-center gap-4 px-3 py-2 rounded-lg hover:bg-gray-100 cursor-pointer">
@@ -49,10 +52,15 @@ function SideBar({ sideBar }) {
 
         <hr className="my-3" />
 
-        {/* SECTION 2 */}
+        
+        {/* SECTION 2 : USER-SPECIFIC FEATURES */}
+        
         <ul className="space-y-1">
+
+          {/* Section title */}
           <li className="px-3 py-2 font-semibold text-gray-700">You</li>
 
+          {/* User actions */}
           <li className="flex items-center gap-4 px-3 py-2 rounded-lg hover:bg-gray-100 cursor-pointer">
             <AiOutlineHistory className="text-xl" /> History
           </li>
@@ -80,10 +88,15 @@ function SideBar({ sideBar }) {
 
         <hr className="my-3" />
 
-        {/* SECTION 3 */}
+        
+        {/* SECTION 3 : EXPLORE → CATEGORIES */}
+      
         <ul className="space-y-1">
+          
+          {/* Section title */}
           <li className="px-3 py-2 font-semibold text-gray-700">Explore</li>
 
+          {/* Explore items */}
           <li className="flex items-center gap-4 px-3 py-2 rounded-lg hover:bg-gray-100 cursor-pointer">
             <HiOutlineShoppingBag className="text-xl" /> Shopping
           </li>
@@ -107,10 +120,15 @@ function SideBar({ sideBar }) {
 
         <hr className="my-3" />
 
-        {/* SECTION 4 */}
+    
+        {/* SECTION 4 : YOUTUBE RELATED SERVICES */}
+      
         <ul className="space-y-2">
+
+          {/* Section title */}
           <li className="px-3 py-2 font-semibold text-gray-700">More from ProTube</li>
 
+          {/* ProTube features */}
           <li className="flex items-center gap-4 px-3 py-1 rounded-lg hover:bg-gray-100 cursor-pointer">
             <img src={logo} className="h-5" /> ProTube Premium
           </li>
@@ -130,8 +148,11 @@ function SideBar({ sideBar }) {
 
         <hr className="my-3" />
 
-        {/* SECTION 5 */}
+      
+        {/* SECTION 5 : SETTINGS + SUPPORT */}
+      
         <ul className="space-y-1">
+
           <li className="flex items-center gap-4 px-3 py-2 rounded-lg hover:bg-gray-100 cursor-pointer">
             <IoSettingsOutline className="text-xl" /> Settings
           </li>
@@ -151,7 +172,9 @@ function SideBar({ sideBar }) {
 
         <hr className="my-3" />
 
-        {/* FOOTER */}
+        
+        {/* FOOTER TEXT → ABOUT / TERMS / COPYRIGHT */}
+        
         <div className="px-3 text-xs text-gray-600 space-y-2 pb-8">
           <p>About Press Copyright Contact us Creators Advertise Developers</p>
           <p>Terms Privacy Policy & Safety How YouTube works Test new features</p>

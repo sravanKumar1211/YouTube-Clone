@@ -1,3 +1,4 @@
+
 import React from "react";
 import axios from "axios";
 import googleLogo from "../assets/google.png";
@@ -6,10 +7,13 @@ import { Link, useNavigate } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 
 function SignIn() {
+  // Cloudinary credentials for image uploads
   const CLOUD_NAME = "dzdurdxzw";
   const UPLOAD_PRESET = "youtube-clone";
+
   const navigate = useNavigate();
 
+  // USER DETAILS (Account details)
   const [user, setUser] = React.useState({
     fullName: "",
     userName: "",
@@ -18,15 +22,19 @@ function SignIn() {
     profilePic: "",
   });
 
+  // CHANNEL DETAILS (ProTube channel info)
   const [channel, setChannel] = React.useState({
     channelName: "",
     about: "",
     channelBanner: "",
   });
 
+  // Stores validation error messages
   const [errors, setErrors] = React.useState({});
 
-  // Upload file to Cloudinary
+  
+  // Upload file to Cloudinary (Profile pic & channel banner)
+  
   const uploadFile = async (file, updateState, field) => {
     if (!file) return;
 
@@ -35,48 +43,65 @@ function SignIn() {
     form.append("upload_preset", UPLOAD_PRESET);
 
     try {
+      // Send file to Cloudinary API
       const res = await axios.post(
         `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/upload`,
         form
       );
+
+      // Update the corresponding field with uploaded image URL
       updateState((prev) => ({ ...prev, [field]: res.data.secure_url }));
     } catch (err) {
       console.log("Upload error:", err);
     }
   };
 
-  // Validation
+  
+  // VALIDATION FUNCTION — check all input fields
+  
   const validate = () => {
     let e = {};
     let ok = true;
 
+    // Validate full name
     if (!user.fullName.trim()) (e.fullName = "Required", (ok = false));
+
+    // Validate username
     if (!user.userName.trim()) (e.userName = "Required", (ok = false));
 
+    // Validate email format
     if (!/^\S+@\S+\.\S+$/.test(user.email)) {
       (e.email = "Invalid email"), (ok = false);
     }
 
+    // Password: Must include uppercase, lowercase & number, 6 chars minimum
     if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/.test(user.password)) {
       e.password = "Weak password";
       ok = false;
     }
 
+    // Channel name validation
     if (!channel.channelName.trim()) (e.channelName = "Required", (ok = false));
+
+    // Channel about section validation
     if (!channel.about.trim()) (e.about = "Required", (ok = false));
 
     setErrors(e);
     return ok;
   };
 
+  // SUBMIT HANDLER — Called when user clicks "Create account"
   const handleSubmit = () => {
+    // First validate inputs
     if (!validate()) {
       toast.error("Fix errors before submitting");
       return;
     }
 
+    // Combine user + channel data for final submission
     const final = { ...user, ...channel };
 
+    // Make signup API request
     axios
       .post("http://localhost:3000/auth/signup", final)
       .then(() => {
@@ -91,7 +116,7 @@ function SignIn() {
   return (
     <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center p-4 z-50">
 
-      {/* CARD */}
+      {/* MAIN CARD WRAPPER */}
       <div className="bg-white rounded-xl w-full max-w-3xl shadow-xl p-6 sm:p-8">
 
         {/* GOOGLE LOGO + HEADING */}
@@ -105,14 +130,16 @@ function SignIn() {
           </p>
         </div>
 
-        {/* FORM GRID (RESPONSIVE) */}
+        {/* FLEX GRID — USER INFO (LEFT) + CHANNEL INFO (RIGHT) */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 mt-8">
 
-          {/* USER INFO */}
+          {/* USER INFO SECTION */}
           <div>
             <h3 className="font-medium mb-3 text-sm sm:text-base">User Info</h3>
 
             <div className="space-y-4">
+
+              {/* FULL NAME */}
               <Input
                 placeholder="Full Name"
                 value={user.fullName}
@@ -122,6 +149,7 @@ function SignIn() {
                 error={errors.fullName}
               />
 
+              {/* USERNAME */}
               <Input
                 placeholder="Username"
                 value={user.userName}
@@ -131,6 +159,7 @@ function SignIn() {
                 error={errors.userName}
               />
 
+              {/* EMAIL */}
               <Input
                 type="email"
                 placeholder="Email"
@@ -139,6 +168,7 @@ function SignIn() {
                 error={errors.email}
               />
 
+              {/* PASSWORD */}
               <Input
                 type="password"
                 placeholder="Password"
@@ -148,14 +178,17 @@ function SignIn() {
                 }
                 error={errors.password}
               />
+              <p className="text-gray-400 text-sm"> "Password must include uppercase, lowercase, number, special char & min 6 chars."</p>
             </div>
           </div>
 
-          {/* CHANNEL INFO */}
+          {/* CHANNEL INFO SECTION */}
           <div>
             <h3 className="font-medium mb-3 text-sm sm:text-base">Channel Info</h3>
 
             <div className="space-y-4">
+
+              {/* CHANNEL NAME */}
               <Input
                 placeholder="Channel Name"
                 value={channel.channelName}
@@ -165,6 +198,7 @@ function SignIn() {
                 error={errors.channelName}
               />
 
+              {/* CHANNEL DESCRIPTION */}
               <textarea
                 placeholder="Channel Description"
                 value={channel.about}
@@ -173,6 +207,7 @@ function SignIn() {
                 }
                 className="w-full border rounded-lg px-3 py-2 h-24 text-sm"
               ></textarea>
+
               {errors.about && (
                 <p className="text-red-500 text-xs">{errors.about}</p>
               )}
@@ -180,7 +215,7 @@ function SignIn() {
           </div>
         </div>
 
-        {/* IMAGE UPLOADS (RESPONSIVE GRID) */}
+        {/* IMAGE UPLOAD SECTION — Profile Pic + Banner */}
         <div className="mt-10">
           <h3 className="font-medium mb-4 text-sm sm:text-base">
             Profile & Banner
@@ -188,15 +223,17 @@ function SignIn() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 items-center">
 
-            {/* PROFILE PIC */}
+            {/* PROFILE PICTURE UPLOAD */}
             <div>
               <p className="text-xs sm:text-sm font-medium">Profile Picture</p>
 
+              {/* Preview of uploaded profile picture */}
               <img
                 src={user.profilePic || "https://via.placeholder.com/100"}
                 className="w-20 h-20 rounded-full object-cover mt-2 border"
               />
 
+              {/* File input */}
               <input
                 type="file"
                 className="mt-2 text-xs sm:text-sm"
@@ -206,10 +243,11 @@ function SignIn() {
               />
             </div>
 
-            {/* CHANNEL BANNER */}
+            {/* CHANNEL BANNER UPLOAD */}
             <div>
               <p className="text-xs sm:text-sm font-medium">Channel Banner</p>
 
+              {/* Banner preview */}
               <img
                 src={
                   channel.channelBanner ||
@@ -218,6 +256,7 @@ function SignIn() {
                 className="w-full h-20 sm:h-24 object-cover rounded-lg mt-2 border"
               />
 
+              {/* File input */}
               <input
                 type="file"
                 className="mt-2 text-xs sm:text-sm"
@@ -230,15 +269,17 @@ function SignIn() {
           </div>
         </div>
 
-        {/* FOOTER BUTTONS */}
+        {/* FOOTER BUTTONS — LOGIN LINK + CREATE ACCOUNT BUTTON */}
         <div className="flex flex-col sm:flex-row justify-between items-center mt-10 gap-4 sm:gap-0">
 
+          {/* Redirect to login page */}
           <Link to={"/login"}>
             <button className="text-blue-600 text-sm hover:underline">
               Already have an account?
             </button>
           </Link>
 
+          {/* Submit button */}
           <button
             className="
               bg-blue-600 text-white 
@@ -258,7 +299,7 @@ function SignIn() {
   );
 }
 
-// Reusable Input Component
+// Reusable controlled Input component (Used across the form)
 function Input({ error, ...props }) {
   return (
     <>
@@ -268,6 +309,8 @@ function Input({ error, ...props }) {
           error ? "border-red-500" : "border-gray-300"
         }`}
       />
+
+      {/* Show error if field fails validation */}
       {error && <p className="text-red-500 text-xs">{error}</p>}
     </>
   );
