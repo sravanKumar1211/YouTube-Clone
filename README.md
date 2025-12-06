@@ -56,6 +56,7 @@ The goal of this project is to:
 
 # 📁 **Folder Structure Explained**
 
+---
 src/
 │── Components/
 │ ├── NavBar.jsx → Top navigation bar
@@ -80,6 +81,7 @@ src/
 tailwind.config.js
 package.json
 
+---
 
 
 ### **Folder Structure Purpose**
