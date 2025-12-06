@@ -57,6 +57,7 @@ The goal of this project is to:
 # 📁 **Folder Structure Explained**
 
 ---
+```bash
 src/
 │── Components/
 │ ├── NavBar.jsx → Top navigation bar
