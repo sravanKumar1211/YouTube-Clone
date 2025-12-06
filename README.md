@@ -1,153 +1,139 @@
 ---
-
-
 # YouTube Clone Frontend
 Built with React & Vite by Sravan Kumar
-## 🧾 Frontend README (`YouTube-Clone/README.md`)
 
 git clone [https://github.com/sravanKumar1211/YouTube-Clone.git](https://github.com/sravanKumar1211/YouTube-Clone.git)
+---
+
+# 🎬 YouTube Clone – Frontend  
+A fully responsive, feature-rich YouTube-like UI built using **React**, designed to integrate seamlessly with the custom backend API.  
+This project recreates core YouTube functionalities such as browsing videos, watching content, exploring channels, searching, and uploading videos (with authentication).
+
+---
+
+## 🚀 **Project Purpose**
+The goal of this project is to:
+- Practice real-world full-stack development.
+- Build a visually appealing, responsive YouTube-like interface.
+- Implement API integration, authentication handling, and media rendering.
+- Learn clean folder structures, reusable components, and scalable UI design.
+
+---
+
+# ✨ **Features**
+### 🎥 **Core Features**
+- Display all videos from backend API  
+- Watch embedded videos  
+- Channel pages & channel filtering  
+- Video upload interface stored in cloudinary 
+- User authentication (sign in, protected routes)  
+- Search functionality (frontend logic)  
+- Fully responsive (mobile → desktop)
+
+### 🧩 **UI/UX Features**
+- Clean layout similar to YouTube  
+- Sidebar navigation  
+- Hover effects  
+- Lazy loading of pages  
+- Card-based video listing  
+- Shimmer loading UI (if implemented)
+
+---
+
+# 🛠️ **Technologies Used**
+| Category | Tech |
+|---------|------|
+| **Frontend Framework** | React.js |
+| **Routing** | react-router-dom |
+| **HTTP Requests** | Axios |
+| **State Management** | useState, useEffect, useCallback, Context |
+| **Styling** | Tailwind CSS / CSS (based on repo) |
+| **Lazy Loading** | React.lazy + Suspense |
+| **Authentication** | JWT stored in browser, sent in headers |
+| **Video Embeds** | YouTube iframe embedding |
+
+---
+
+# 📁 **Folder Structure Explained**
+
+src/
+│── Components/
+│ ├── NavBar.jsx → Top navigation bar
+│ ├── VideoCard.jsx → UI for each video thumbnail
+│ ├── Sidebar.jsx → Category / menu sidebar
+│ ├── HomePage.jsx → Renders filter/ video cards
+| ├── Login.jsx → login using JWT token
+| ├── SignIn.jsx → signin sent data to backend
+│── Pages/
+│ ├── Home.jsx → Fetches + displays all videos
+│ ├── Video.jsx → Single video view page
+│ ├── ChannelPage.jsx → Channel-specific content
+│ ├── VideoUpload.jsx → UI for uploading videos
+│ ├── VideoCommentCard.jsx → for comments
+| ├── VideoSuggestedCard.jsx → suggested videos
+│
+│── App.jsx → Main APP + Routes
+│── index.jsx → App entry point
+│
+│ ├── axiosInstance.js → Pre-configured Axios (baseURL + token)
+│
+tailwind.config.js
+package.json
 
 
 
-## 📺 Features
+### **Folder Structure Purpose**
+- **Components** → Reusable UI blocks  
+- **Pages** → Full screens linked to routes  
+- **utils** → Axios instance & helper functions  
+- **App.jsx** → Routing and layout handling  
 
-# YouTube Clone (Frontend)
+---
 
-React + Vite frontend for a YouTube-like video platform.  
-Provides UI for authentication, video listing, video player, channels, search, upload and user interactions (likes, comments).
+# 🔄 **Frontend Flow (How Code Executes)**
 
+### **1️⃣ App loads**  
+- React Router initializes  
+- NavBar + Sidebar render  
+- Protected routes block unauthenticated pages
 
+### **2️⃣ Home Page**  
+- Makes request to:  
+  `GET /api/allvideo`  
+- Displays Video Cards in grid
 
-## ✨ Features
+### **3️⃣ Video Page**  
+- Fetch video by ID  
+- Render YouTube iframe  
+- Additional metadata + recommended videos
 
-- **Authentication UI**
-  - Login / Register forms
-  - Token-based auth integration with backend API
-  - Protected routes (only logged-in users can upload, comment, etc.)
+### **4️⃣ Upload Page**  
+- Allows user to upload video  
+- Sends `multipart/form-data` to backend
 
-- **Home Feed**
-  - Fetches videos from backend
-  - Responsive grid layout using Tailwind CSS
-  - Shows title, thumbnail, channel name, views and upload time
+### **5️⃣ Authentication**  
+- Login page gets token → saved in localStorage  
+- Axios sends `Authorization: Bearer <token>`
 
-- **Video Watch Page**
-  - HTML5 video player using Cloudinary/video URL from backend
-  - Video details (title, description, tags)
-  - Like / dislike / subscribe actions
-  - Comments list + add comment form
-  - Recommended / related videos sidebar
+---
 
-- **Channel Page**
-  - Channel banner + avatar + basic channel info
-  - Channel subscription button
-  - Channel’s uploaded videos list
+# ▶️ **How to Run the Project**
 
-- **Upload Video**
-  - Upload form (title, description, category, thumbnail, video file)
-  - Sends files to backend, which uploads to Cloudinary
-  - Displays toast notifications for success / error
+### **1. Clone Repo**
+```sh
+git clone https://github.com/sravanKumar1211/YouTube-Clone
+cd YouTube-Clone
 
-- **Global Search**
-  - Search bar in navbar
-  - Search results page based on title/description/category
-
-
-## 🧱 Tech Stack
-
-- **Frontend Framework:** React + Vite
-- **Tech:** useState ,useEffect ,lazyloading, useMemo, React.memo
-- **Routing:** React Router
-- **Styling:** Tailwind CSS
-- **HTTP Client:** Axios
-- **Notifications:** (e.g. react-toastify) – shows success/error toasts
-- **Media:** Cloudinary URLs from backend
-
-
-## 📁 Project Structure
-
-```bash
-YouTube-Clone/
-├── public/
-├── src/
-│   ├── components/        # Reusable UI components (Navbar, Sidebar, VideoCard, etc.)
-│   ├── pages/             # Page components (Home, Watch, Channel, Upload, Login, Register, etc.)
-│   ├── features/         
-│   ├── App.jsx            # Main app component, routing
-│   └── main.jsx          # React entrypoint
-├── .gitignore
-├── index.html
-├── package.json
-├── vite.config.js
-└── README.md
-
-
-## 🛠️ Technologies Used
-
-- **Framework**: [React.js](https://react.dev/)
-- **Build Tool**: [Vite](https://vitejs.dev/)
-- **Styling**: Tailwind CSS / CSS Modules (Inferred)
-- **Routing**: React Router DOM
-- **State Management**: React Hooks (useState, useEffect,lazyLoading, useMemo, React.memo) 
-- **HTTP Client**: Axios (for API communication)
-- **Icons**: React Icons / FontAwesome
-
-
-This structure ensures that the UI is modular, maintainable, and easy to scale.
-
-## 🚀 How to Run Locally
-
-1. **Clone the repository**
-   ```bash
-   git clone [https://github.com/sravanKumar1211/YouTube-Clone.git](https://github.com/sravanKumar1211/YouTube-Clone.git)
-   cd YouTube-Clone
-Install Dependencies
-
-Bash
-
+2. Install Dependencies
 npm install
-connect to endpoint to backend:
 
-Code snippet
-
-VITE_BACKEND_URL=http://localhost:3000/api/v1
-Start Development Server
-
-Bash
-
-npm run dev
-Access the app at http://localhost:5173 (or the port shown in your terminal).
-
-Build for Production
-
-Bash
-
+3. Start Development Server
 npm run dev
 
-Built with React & Vite by Sravan Kumar
+4. Make sure backend is running at port 3000
 
+Update the backend URL in axiosInstance.
 
+🎯 Conclusion
 
-
-
-
-
-<<<<<<< HEAD
-# React + Vite
-
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
-=======
-# YouTube-Clone
->>>>>>> 0c66ceecb7a5c378cb2939e11725dc5422def6a8
+The YouTube Clone frontend replicates a modern video browsing experience with scalable structure and production-level best practices. It serves as a strong portfolio project and integrates perfectly with your custom backend.
